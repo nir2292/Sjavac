@@ -1,4 +1,4 @@
-package Sjavac.oop.ex6.main;
+package oop.ex6.main;
 
 
 import java.util.ArrayList;
@@ -29,5 +29,6 @@ public class Sjavac {
 		for (Type variable : globalVariables){
 			System.out.println(variable);
 		}
+		userInputScanner.close();
 	}
 }
