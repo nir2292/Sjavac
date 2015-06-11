@@ -6,9 +6,9 @@ import java.util.regex.Pattern;
 public enum Type {
 	INT ("(\\d)+"),
 	DOUBLE ("(\\d)+(.)?(\\d+)*"),
-	STRING ("(\\w)*"),
-	BOOLEAN ("(true|false)|\\d"),
-	CHAR ("\\w");
+	STRING ("[\\w"+ Parser.LEGAL_CHARS +"]+"),
+	BOOLEAN ("(true|false|((\\d)+(.)?(\\d+)*))"),
+	CHAR ("[\\w"+ Parser.LEGAL_CHARS +"]");
 	
 	private Pattern p;
 	
