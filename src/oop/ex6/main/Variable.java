@@ -10,7 +10,7 @@ public class Variable {
 			this.var = var;
 			this.value = value;
 		} else {
-			throw new illegalValueException();
+			throw new illegalValueException("Bad value for type " + var.toString());
 		}
 	}
 }

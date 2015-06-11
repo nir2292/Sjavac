@@ -4,25 +4,29 @@ import java.util.ArrayList;
 import oop.ex6.main.*;
 
 public abstract class Scope {
-	private static ArrayList<Variable> globalVariables;
 	private ArrayList<Variable> knownVariables;
-	private ArrayList<Scope> subScopes;
 	
 	public Scope(){
-		Scope.globalVariables = new ArrayList<>();
 		this.knownVariables = new ArrayList<>();
-		this.subScopes = new ArrayList<>();
 	}
 	
 	public Scope(ArrayList<Variable> vars){
-		Scope.globalVariables = new ArrayList<>();
 		this.knownVariables = new ArrayList<>();
-		this.subScopes = new ArrayList<>();
-		addGlobalVars(vars);
+		addAllVars(vars);
 	}
 	
-	private void addGlobalVars(ArrayList<Variable> vars){
+	public void addVar(Variable var){
+		knownVariables.add(var);
+	}
+	
+	public void addAllVars(ArrayList<Variable> vars){
 		for(Variable var:vars)
-			Scope.globalVariables.add(var);
+			this.knownVariables.add(var);
+	}
+	
+	public boolean knowsVariable(Variable var){
+		if(knownVariables.contains(var))
+			return true;
+		return false;
 	}
 }
