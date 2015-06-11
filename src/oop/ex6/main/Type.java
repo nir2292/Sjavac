@@ -1,5 +1,8 @@
 package oop.ex6.main;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 public enum Type {
 	INT ("(\\d)+"),
 	DOUBLE ("(\\d)+(.)?(\\d+)*"),
@@ -7,13 +10,13 @@ public enum Type {
 	BOOLEAN ("(true|false)|\\d"),
 	CHAR ("\\w");
 	
-	private String regex;
+	private Pattern p;
 	
-	Type(String expression){
-		this.regex = expression;
+	Type(String format){
+		p = Pattern.compile(format);
 	}
 	
-	String getRegex(){
-		return this.regex;
+	public Matcher getMatcher(String values) {
+		return p.matcher(values); 
 	}
 }

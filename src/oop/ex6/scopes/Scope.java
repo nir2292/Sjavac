@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import oop.ex6.main.*;
 
 public abstract class Scope {
-	private static ArrayList<Variable<Type>> globalVariables;
-	private ArrayList<Variable<Type>> knownVariables;
+	private static ArrayList<Variable> globalVariables;
+	private ArrayList<Variable> knownVariables;
 	private ArrayList<Scope> subScopes;
 	
 	public Scope(){
@@ -14,15 +14,15 @@ public abstract class Scope {
 		this.subScopes = new ArrayList<>();
 	}
 	
-	public Scope(ArrayList<Variable<Type>> vars){
+	public Scope(ArrayList<Variable> vars){
 		Scope.globalVariables = new ArrayList<>();
 		this.knownVariables = new ArrayList<>();
 		this.subScopes = new ArrayList<>();
 		addGlobalVars(vars);
 	}
 	
-	private void addGlobalVars(ArrayList<Variable<Type>> vars){
-		for(Variable<Type> var:vars)
+	private void addGlobalVars(ArrayList<Variable> vars){
+		for(Variable var:vars)
 			Scope.globalVariables.add(var);
 	}
 }
