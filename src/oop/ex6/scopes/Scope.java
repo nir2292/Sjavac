@@ -3,7 +3,7 @@ import java.util.ArrayList;
 
 import oop.ex6.main.*;
 
-public abstract class Scope {
+public class Scope {
 	private ArrayList<Variable> knownVariables;
 	
 	public Scope(){
