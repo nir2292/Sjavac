@@ -47,7 +47,7 @@ public class Scope {
 		throw new noSuchVariable("Unknown variable" + varName);
 	}
 	
-	public void setVariableValue(String varName, String value) throws noSuchVariable{
+	public void setVariableValue(String varName, String value) throws noSuchVariable, illegalValueException{
 		getVariable(varName).setValue(value);
 	}
 	

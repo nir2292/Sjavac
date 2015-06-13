@@ -11,10 +11,11 @@ import java.util.regex.Pattern;
 import oop.ex6.scopes.*;
 
 public class Parser {
-	final String varValuesRegex = "(\\s*(\\w+)\\s*\\=\\s*(\\w+)\\s*\\,?)";
-	final String varLineRegex = "([a-zA-Z]+)\\s+" + varValuesRegex + "+;";
-	final String methodStartRegex = "void\\s+\\w+\\s*\\{";
-	final String startScopeRegex = "(if|while|void)\\(\\w+\\)";
+	final String varValuesRegex = "\\s*(\\w+)\\s*(\\=\\s*(\\w+)\\s*)?";
+	final String varLineRegex = "([a-zA-Z]+)\\s+(" + varValuesRegex + ",)*(" + varValuesRegex + ")?\\s*;";
+	final String methodValuesRegex = "([a-zA-Z]+)\\s+([\\p{Punct}\\w]+)";
+	final String methodStartRegex = "void\\s+\\w+\\s*\\(\\s*("+ methodValuesRegex +"\\s*,)*\\s*(" + methodValuesRegex + ")\\s*\\)\\s*\\{";
+	final String startScopeRegex = "(if|while)\\s+\\(([])\\)\\s*\\{";
 	final String endScopeRegex = "\\}";
 	static final String COMMENT_PREFIX = "//";
 	static final String EMPTY_LINE = "[\\s]*";
@@ -113,15 +114,19 @@ public class Parser {
 		m.matches();
 		String varType = m.group(1);
 		Type var;
+		m.reset(currentLine.substring(m.start(1) + varType.length()));
 		m.usePattern(Pattern.compile(varValuesRegex));
-		m.reset();
 		while (m.find()) {
 			try {
 				var = Type.valueOf(varType.toUpperCase());
 			} catch (IllegalArgumentException e) {
 				throw new noSuchTypeException("illegal value :" + varType);
 			}
-			vars.add(new Variable(var, m.group(2) , m.group(3)));
+			if (m.group(3) != null) {
+				vars.add(new Variable(var, m.group(1) , m.group(3)));
+			} else {
+				vars.add(new Variable(var, m.group(1)));
+			}
 		}
 		return vars;	
 	}
