@@ -13,11 +13,11 @@ import oop.ex6.scopes.*;
 public class Parser {
 	final String varValuesRegex = "(\\s*(\\w+)\\s*\\=\\s*(\\w+)\\s*\\,?)";
 	final String varLineRegex = "([a-zA-Z]+)\\s+" + varValuesRegex + "+;";
-	final String methodStartRegex = "void\\s+\\w+";
+	final String methodStartRegex = "void\\s+\\w+\\s*\\{";
 	final String startScopeRegex = "(if|while|void)\\(\\w+\\)";
-	final String endScopeRegex = "}";
+	final String endScopeRegex = "\\}";
 	static final String COMMENT_PREFIX = "//";
-	static final String EMPTY_LINE = "[\\s]+";
+	static final String EMPTY_LINE = "[\\s]*";
 	
 	static final String LEGAL_CHARS = "\\!#\\$\\%\\&\\(\\)\\*\\+\\-\\.\\/\\:\\;\\<\\=\\>\\?@\\[\\]\\^\\_\\`{\\|}\\~";
 	BufferedReader buffer;
@@ -40,10 +40,11 @@ public class Parser {
 				continue;
 			} else if  (Pattern.matches(methodStartRegex, line)) {
 				methods.add(getChunk());
+				line = buffer.readLine();
 			} else if(Pattern.matches(varLineRegex, line)){
-					//calls handleVar method to check for variables in this line.
-					globalVars.addAll(handleVar(line));
-					line = buffer.readLine();
+				//calls handleVar method to check for variables in this line.
+				globalVars.addAll(handleVar(line));
+				line = buffer.readLine();
 			} else {
 				throw new illegalLineException("Line does not match format");
 			}
@@ -68,17 +69,15 @@ public class Parser {
 				continue;
 			}
 			if(Pattern.matches(startScopeRegex, currentLine)){
-				
 				sc.addScope(getChunk());
 				continue;
 			}
 			if(Pattern.matches(endScopeRegex, currentLine)){
-				currentLine = buffer.readLine();
-				break;
+				return sc;
 			}
 			throw new illegalLineException("Line does not match format");
 		}
-		return sc;
+		throw new illegalLineException("unexpected EOF");
 	}
 	
 	private void validateMethods() {
