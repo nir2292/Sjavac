@@ -29,6 +29,7 @@ public class Parser {
 		this.methods = new ArrayList<>();
 		this.globalVars = new ArrayList<>();
 		setMethods();
+		initializeVars(this.methods);
 	}
 	
 
@@ -49,7 +50,17 @@ public class Parser {
 				throw new illegalLineException("Line does not match format");
 			}
 		}
+		for (Scope method: methods) {
+			method.addAllVars(globalVars);
+		}
 	}
+	
+	private void initializeVars(ArrayList<Scope> methods){
+		for (Scope method: methods) {
+			method.addAllVars(globalVars);
+		}
+	}
+	
 	
 	public Scope getChunk() throws IOException, badFileFormatException {
 		Scope sc = new Scope();
