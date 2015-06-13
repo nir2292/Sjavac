@@ -44,6 +44,10 @@ public class Scope {
 		throw new noSuchVariable("Unknown variable" + varName);
 	}
 	
+	public void setVariableValue(String varName, String value) throws noSuchVariable{
+		getVariable(varName).setValue(value);
+	}
+	
 	public void addScope(Scope scope) {
 		internalScopes.add(scope);
 	}
