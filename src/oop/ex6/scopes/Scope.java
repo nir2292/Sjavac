@@ -4,18 +4,17 @@ import java.util.ArrayList;
 import oop.ex6.main.*;
 
 public class Scope {
-//	private ArrayList<Variable> globalVariables;
 	private ArrayList<Variable> knownVariables;
 	private ArrayList<Scope> internalScopes;
 	
 	public Scope(){
 		this.knownVariables = new ArrayList<>();
-//		this.globalVariables = new ArrayList<>();
+		this.internalScopes = new ArrayList<>(); 
 	}
 	
 	public Scope(ArrayList<Variable> vars){
 		this.knownVariables = new ArrayList<>();
-//		this.globalVariables = new ArrayList<>();
+		this.internalScopes = new ArrayList<>();
 		addAllVars(vars);
 	}
 	
@@ -41,9 +40,6 @@ public class Scope {
 		for(Variable var:knownVariables)
 			if(var.getName().equals(varName))
 				return var;
-//		for(Variable var:globalVariables)
-//			if(var.getName().equals(varName))
-//				return var;
 		throw new noSuchVariable("Unknown variable" + varName);
 	}
 	

@@ -14,8 +14,8 @@ public class Parser {
 	final String varValuesRegex = "\\s*(\\w+)\\s*(\\=\\s*(\\w+)\\s*)?";
 	final String varLineRegex = "([a-zA-Z]+)\\s+(" + varValuesRegex + ",)*(" + varValuesRegex + ")?\\s*;";
 	final String methodValuesRegex = "([a-zA-Z]+)\\s+([\\p{Punct}\\w]+)";
-	final String methodStartRegex = "void\\s+\\w+\\s*\\(\\s*("+ methodValuesRegex +"\\s*,)*\\s*(" + methodValuesRegex + ")\\s*\\)\\s*\\{";
-	final String startScopeRegex = "(if|while)\\s+\\(([])\\)\\s*\\{";
+	final String methodStartRegex = "void\\s+([\\w]+)\\s*\\(\\s*(("+ methodValuesRegex +"\\s*,\\s*)*\\s*(" + methodValuesRegex + ")?)\\s*\\)\\s*\\{";
+	final String startScopeRegex = "(if|while)\\s+\\(([TODO])\\)\\s*\\{";
 	final String endScopeRegex = "\\}";
 	static final String COMMENT_PREFIX = "//";
 	static final String EMPTY_LINE = "[\\s]*";
@@ -34,14 +34,23 @@ public class Parser {
 	}
 	
 
-	private void setMethods() throws IOException, badFileFormatException{
+	private void setMethods() throws IOException, badFileFormatException {
 		String line = buffer.readLine();
+		Pattern p;
+		Matcher m;
 		while(line != null) {
 			if (checkToIgnore(line)) {
 				line = buffer.readLine();
 				continue;
 			} else if  (Pattern.matches(methodStartRegex, line)) {
-				methods.add(getChunk());
+				p = Pattern.compile(methodStartRegex);
+				m = p.matcher(line);
+				m.matches();
+				String MethodName = m.group(1);
+				String methodParameters = m.group(2);
+				Scope method = getChunk();
+				method.addAllVars(handleVar(methodParameters));
+				methods.add(method);
 				line = buffer.readLine();
 			} else if(Pattern.matches(varLineRegex, line)){
 				//calls handleVar method to check for variables in this line.
@@ -106,7 +115,7 @@ public class Parser {
 		return false;
 	}
 	
-	
+	//TODO!! fix method so it works on method-parameters.
 	private ArrayList<Variable> handleVar(String currentLine) throws badFileFormatException {
 		ArrayList<Variable> vars = new ArrayList<>();
 		Pattern p = Pattern.compile(varLineRegex);
