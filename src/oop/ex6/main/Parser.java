@@ -22,18 +22,39 @@ public class Parser {
 	static final String LEGAL_CHARS = "\\!#\\$\\%\\&\\(\\)\\*\\+\\-\\.\\/\\:\\;\\<\\=\\>\\?@\\[\\]\\^\\_\\`{\\|}\\~";
 	BufferedReader buffer;
 	private ArrayList<Scope> methods;
+	private ArrayList<Variable> globalVars;
 	
 	public Parser(File path) throws IOException, badFileFormatException {
 		this.buffer =  new BufferedReader(new FileReader(path));
 		this.methods = new ArrayList<>();
+		this.globalVars = new ArrayList<>();
 		setMethods();
+	}
+	
+
+	private void setMethods() throws IOException, badFileFormatException{
+		String line = buffer.readLine();
+		while(line != null) {
+			if (checkToIgnore(line)) {
+				line = buffer.readLine();
+				continue;
+			} else if  (Pattern.matches(methodStartRegex, line)) {
+				methods.add(getChunk());
+			} else if(Pattern.matches(varLineRegex, line)){
+					//calls handleVar method to check for variables in this line.
+					globalVars.addAll(handleVar(line));
+					line = buffer.readLine();
+			} else {
+				throw new illegalLineException("Line does not match format");
+			}
+		}
 	}
 	
 	public Scope getChunk() throws IOException, badFileFormatException {
 		Scope sc = new Scope();
 		String currentLine = buffer.readLine();
 		
-		while(!Pattern.matches(endScopeRegex, currentLine)){ // && !parenthesesBalance.isEmpty()
+		while(currentLine != null){
 			currentLine = currentLine.trim();
 			//checks if a line should be ignores (comment, empty line, etc)
 			if (checkToIgnore(currentLine)) {
@@ -47,29 +68,17 @@ public class Parser {
 				continue;
 			}
 			if(Pattern.matches(startScopeRegex, currentLine)){
+				
 				sc.addScope(getChunk());
 				continue;
 			}
 			if(Pattern.matches(endScopeRegex, currentLine)){
+				currentLine = buffer.readLine();
 				break;
 			}
 			throw new illegalLineException("Line does not match format");
 		}
 		return sc;
-	}
-	
-	private void setMethods() throws IOException, badFileFormatException{
-		String line = buffer.readLine();
-		while(line != null) {
-			if (checkToIgnore(line)) {
-				line = buffer.readLine();
-				continue;
-			}
-			if(Pattern.matches(methodStartRegex, line)) {
-				methods.add(getChunk());
-			}
-			line = buffer.readLine();
-		}
 	}
 	
 	private void validateMethods() {
