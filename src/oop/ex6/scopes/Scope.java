@@ -5,6 +5,7 @@ import oop.ex6.main.*;
 
 public class Scope {
 	private ArrayList<Variable> knownVariables;
+	private ArrayList<Scope> internalScopes;
 	
 	public Scope(){
 		this.knownVariables = new ArrayList<>();
@@ -28,5 +29,9 @@ public class Scope {
 		if(knownVariables.contains(var))
 			return true;
 		return false;
+	}
+	
+	public void addScope(Scope scope) {
+		internalScopes.add(scope);
 	}
 }
