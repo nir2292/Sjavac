@@ -12,15 +12,13 @@ public class Sjavac {
 	
 	
 	
-	public static void main(String[] args){
-		Stack<String> teststack = new Stack<>();
-		teststack.push("test");
+	public static void main(String[] args) {
 		
 		File sjavac = new File(args[0]);
 		try {
 			Parser parser = new Parser(sjavac);
-			parser.getChunk(teststack);
-		} catch (IOException | illegalValueException | noSuchTypeException e1) {
+			parser.getChunk();
+		} catch (IOException | badFileFormatException e1) {
 			System.out.println("ERROR");
 			e1.printStackTrace();
 		}

@@ -1,13 +1,12 @@
 package oop.ex6.main;
 
-public class illegalValueException extends badFileFormatException {
-
+public class illegalLineException extends badFileFormatException {
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	public illegalValueException(String message){
+	public illegalLineException(String message) {
 		super(message);
 	}
 

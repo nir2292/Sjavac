@@ -17,64 +17,94 @@ public class Parser {
 	final String startScopeRegex = "(if|while|void)\\(\\w+\\)";
 	final String endScopeRegex = "}";
 	static final String COMMENT_PREFIX = "//";
+	static final String EMPTY_LINE = "[\\s]+";
 	
 	static final String LEGAL_CHARS = "\\!#\\$\\%\\&\\(\\)\\*\\+\\-\\.\\/\\:\\;\\<\\=\\>\\?@\\[\\]\\^\\_\\`{\\|}\\~";
 	BufferedReader buffer;
 	private ArrayList<Scope> methods;
 	
-	public Parser(File path) throws IOException, illegalValueException, noSuchTypeException {
+	public Parser(File path) throws IOException, badFileFormatException {
 		this.buffer =  new BufferedReader(new FileReader(path));
 		this.methods = new ArrayList<>();
 		setMethods();
 	}
 	
-	public Scope getChunk(Stack<String> parenthesesBalance) throws illegalValueException, noSuchTypeException, IOException{
+	public Scope getChunk() throws IOException, badFileFormatException {
 		Scope sc = new Scope();
 		String currentLine = buffer.readLine();
 		
 		while(!Pattern.matches(endScopeRegex, currentLine)){ // && !parenthesesBalance.isEmpty()
 			currentLine = currentLine.trim();
-			if (currentLine.startsWith(COMMENT_PREFIX)) {
+			//checks if a line should be ignores (comment, empty line, etc)
+			if (checkToIgnore(currentLine)) {
 				currentLine = buffer.readLine();
 				continue;
 			}
 			if(Pattern.matches(varLineRegex, currentLine)){
-				Pattern p = Pattern.compile(varLineRegex);
-				Matcher m = p.matcher(currentLine);
-				m.matches();
-				String varType = m.group(1);
-				Type var;
-				m.usePattern(Pattern.compile(varValuesRegex));
-				m.reset();
-				while (m.find()) {
-					var = Type.valueOf(varType.toUpperCase());
-					sc.addVar(new Variable(var, m.group(2) , m.group(3)));
-				}
-				
+				//calls handleVar method to check for variables in this line.
+				sc.addAllVars(handleVar(currentLine));
 				currentLine = buffer.readLine();
 				continue;
 			}
 			if(Pattern.matches(startScopeRegex, currentLine)){
-				//TO-DO
-				//
+				sc.addScope(getChunk());
+				continue;
 			}
 			if(Pattern.matches(endScopeRegex, currentLine)){
-				//TO-DO
+				break;
 			}
+			throw new illegalLineException("Line does not match format");
 		}
 		return sc;
 	}
 	
-	private void setMethods() throws IOException, illegalValueException, noSuchTypeException{
+	private void setMethods() throws IOException, badFileFormatException{
 		String line = buffer.readLine();
-		
 		while(line != null) {
+			if (checkToIgnore(line)) {
+				line = buffer.readLine();
+				continue;
+			}
 			if(Pattern.matches(methodStartRegex, line)) {
-				
-				methods.add(getChunk(new Stack<String>()));
+				methods.add(getChunk());
 			}
 			line = buffer.readLine();
 		}
+	}
+	
+	private void validateMethods() {
+		return;
+	}
+	
+	private boolean checkToIgnore(String line) {
+		if (line.startsWith(COMMENT_PREFIX)){
+			return true;
+		}
+		if (Pattern.matches(EMPTY_LINE, line)){
+			return true;
+		}
+		return false;
+	}
+	
+	
+	private ArrayList<Variable> handleVar(String currentLine) throws badFileFormatException {
+		ArrayList<Variable> vars = new ArrayList<>();
+		Pattern p = Pattern.compile(varLineRegex);
+		Matcher m = p.matcher(currentLine);
+		m.matches();
+		String varType = m.group(1);
+		Type var;
+		m.usePattern(Pattern.compile(varValuesRegex));
+		m.reset();
+		while (m.find()) {
+			try {
+				var = Type.valueOf(varType.toUpperCase());
+			} catch (IllegalArgumentException e) {
+				throw new noSuchTypeException("illegal value :" + varType);
+			}
+			vars.add(new Variable(var, m.group(2) , m.group(3)));
+		}
+		return vars;	
 	}
 }
 //
