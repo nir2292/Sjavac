@@ -1,8 +1,11 @@
 package oop.ex6.main;
 
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
+import java.util.Stack;
 
 
 public class Sjavac {
@@ -10,6 +13,19 @@ public class Sjavac {
 	
 	
 	public static void main(String[] args){
+		Stack<String> teststack = new Stack<>();
+		teststack.push("test");
+		
+		File sjavac = new File(args[0]);
+		try {
+			Parser parser = new Parser(sjavac);
+			parser.getChunk(teststack);
+		} catch (IOException | illegalValueException | noSuchTypeException e1) {
+			System.out.println("ERROR");
+			e1.printStackTrace();
+		}
+		
+		
 		
 		ArrayList<Type> globalVariables = new ArrayList<>();
 		Scanner userInputScanner = new Scanner(System.in);

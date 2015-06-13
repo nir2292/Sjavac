@@ -5,8 +5,7 @@ public class Variable {
 	Type var;
 	String name;
 	String value;
-	
-	public Variable(Type var,String name, String value) throws illegalValueException{
+	public Variable(Type var, String name, String value) throws illegalValueException{
 		if (var.getMatcher(value).matches()) {
 			this.var = var;
 			this.name = name;
