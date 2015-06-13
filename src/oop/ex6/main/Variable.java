@@ -14,4 +14,12 @@ public class Variable {
 			throw new illegalValueException("Bad value for type " + var.toString());
 		}
 	}
+	
+	public String getName() {
+		return this.name;
+	}
+	
+	public String getValue() {
+		return this.value;
+	}
 }
