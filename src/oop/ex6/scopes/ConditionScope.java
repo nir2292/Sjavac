@@ -7,16 +7,16 @@ import oop.ex6.main.Type;
 import oop.ex6.main.Variable;
 import oop.ex6.main.noSuchVariable;
 
-public class ConditionName extends Scope {
+public class ConditionScope extends Scope {
 	private Matcher conditionBooleanMatcher;
 	private Matcher conditionValueMatcher;
 
-	public ConditionName(String[] conditions) throws badConditionFormat, noSuchVariable {
+	public ConditionScope(String[] conditions) throws badConditionFormat, noSuchVariable {
 		super();
 		addConditions(conditions);
 	}
 
-	public ConditionName(String[] conditions, ArrayList<Variable> vars) throws badConditionFormat, noSuchVariable {
+	public ConditionScope(String[] conditions, ArrayList<Variable> vars) throws badConditionFormat, noSuchVariable {
 		super(vars);
 		addConditions(conditions);
 	}
