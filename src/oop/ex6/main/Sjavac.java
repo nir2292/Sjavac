@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.Stack;
 
+import oop.ex6.scopes.Scope;
+
 
 public class Sjavac {
 	
@@ -17,9 +19,9 @@ public class Sjavac {
 		File sjavac = new File(args[0]);
 		try {
 			Parser parser = new Parser(sjavac);
-			parser.ParseFile();
+			ArrayList<Scope> a = parser.ParseFile();
 			
-			Validator v = new Validator(parser.ParseFile());
+			Validator v = new Validator(a);
 			v.isValid();
 			
 		} catch (IOException | badFileFormatException e1) {

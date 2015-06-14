@@ -26,7 +26,13 @@ public class ConditionScope extends Scope {
 		super(vars);
 		this.conditions = conditions;
 	}
-	
+
+	public ConditionScope(Scope scope) {
+		super();
+		addAllVars(scope.getKnownVariables());
+		addAllAssignmentVar(scope.getChangedVars());
+	}
+
 	public void addContitions(String[] conditions) {
 		this.conditions = conditions;
 	}

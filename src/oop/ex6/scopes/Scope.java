@@ -37,6 +37,12 @@ public class Scope {
 		this.changedVars.add(var);
 	}
 	
+
+	public void addAllAssignmentVar(ArrayList<Variable> changedVars) {
+		for(Variable var:changedVars)
+			addAssignmentVar(var);
+	}
+	
 	public ArrayList<Variable> getKnownVariables() {
 		return knownVariables;
 	}
