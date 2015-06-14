@@ -12,12 +12,13 @@ import oop.ex6.scopes.*;
 
 public class Parser {
 	final String varValuesRegex = "\\s*(\\w+)\\s*(\\=\\s*(\\w+)\\s*)?";
-	final String varLineRegex = "([a-zA-Z]+)\\s+(" + varValuesRegex + ",)*(" + varValuesRegex + ")?\\s*;";
+	final String varLineRegex = "([a-zA-Z]+)\\s+(" + varValuesRegex + ",)*(" + varValuesRegex + ")?\\s*";
 	final String methodValuesRegex = "([a-zA-Z]+)\\s+([\\p{Punct}\\w]+)";
 	final String methodStartRegex = "void\\s+([\\w]+)\\s*\\(\\s*(("+ methodValuesRegex +"\\s*,\\s*)*\\s*(" + methodValuesRegex + ")?)\\s*\\)\\s*\\{";
 	final String startScopeRegex = "(if|while)\\s+\\(([TODO])\\)\\s*\\{";
 	final String endScopeRegex = "\\}";
 	static final String COMMENT_PREFIX = "//";
+	static final String END_OF_CODE_LINE = ";";
 	static final String EMPTY_LINE = "[\\s]*";
 	
 	static final String LEGAL_CHARS = "\\!#\\$\\%\\&\\(\\)\\*\\+\\-\\.\\/\\:\\;\\<\\=\\>\\?@\\[\\]\\^\\_\\`{\\|}\\~";
@@ -47,14 +48,16 @@ public class Parser {
 				m = p.matcher(line);
 				m.matches();
 				String MethodName = m.group(1);
-				String methodParameters = m.group(2);
+				String[] methodParameters = m.group(2).split(",");
 				Scope method = getChunk();
-				method.addAllVars(handleVar(methodParameters));
+				for (String parameter: methodParameters) {
+					method.addAllVars(handleVar(parameter.trim()));
+				}
 				methods.add(method);
 				line = buffer.readLine();
-			} else if(Pattern.matches(varLineRegex, line)){
+			} else if(Pattern.matches(varLineRegex + END_OF_CODE_LINE, line)){
 				//calls handleVar method to check for variables in this line.
-				globalVars.addAll(handleVar(line));
+				globalVars.addAll(handleVar(line.substring(0, line.lastIndexOf(END_OF_CODE_LINE))));
 				line = buffer.readLine();
 			} else {
 				throw new illegalLineException("Line does not match format");
@@ -83,9 +86,9 @@ public class Parser {
 				currentLine = buffer.readLine();
 				continue;
 			}
-			if(Pattern.matches(varLineRegex, currentLine)){
+			if(Pattern.matches(varLineRegex + END_OF_CODE_LINE, currentLine)){
 				//calls handleVar method to check for variables in this line.
-				sc.addAllVars(handleVar(currentLine));
+				sc.addAllVars(handleVar(currentLine.substring(0, currentLine.lastIndexOf(END_OF_CODE_LINE))));
 				currentLine = buffer.readLine();
 				continue;
 			}
