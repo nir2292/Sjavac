@@ -30,6 +30,9 @@ public class Variable {
 		this.finalFlag = finalFlag;
 	}
 	
+	public String toString() {
+		return name + ": (" + var + " , " + value + ")";
+	}
 	public String getName() {
 		return this.name;
 	}

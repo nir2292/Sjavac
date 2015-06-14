@@ -18,9 +18,9 @@ public class Validator {
 	
 	private boolean ValidateConditions() throws badConditionFormat, noSuchVariable {
 		for(Scope scope:scopes){
-			ArrayList<ConditionScope> conditionScopes = scope.getInternalScopes();
-			for(ConditionScope cScope:conditionScopes)
-				cScope.validateConditions();
+//			ArrayList<ConditionScope> conditionScopes = scope.getInternalScopes();
+//			for(ConditionScope cScope:conditionScopes)
+//				cScope.validateConditions();
 		}
 		return true;
 	}

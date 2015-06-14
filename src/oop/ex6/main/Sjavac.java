@@ -13,8 +13,14 @@ import oop.ex6.scopes.Scope;
 public class Sjavac {
 	
 	
-	public static void printScopeTree() {
-		
+	public static void printScopeTree(Scope mainScope) {
+		System.out.println(mainScope);
+		for (Variable var: mainScope.getKnownVariables()) {
+			System.out.println(var);
+		}
+		for (Scope interScope: mainScope.getInternalScopes()) {
+			printScopeTree(interScope);
+		}
 	}
 	
 	public static void main(String[] args) {
@@ -23,7 +29,7 @@ public class Sjavac {
 		try {
 			Parser parser = new Parser(sjavac);
 			Scope a = parser.parseFile();
-			
+			printScopeTree(a);
 			//Validator v = new Validator(a);
 			//v.isValid();
 			
