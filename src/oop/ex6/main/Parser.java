@@ -12,7 +12,8 @@ import oop.ex6.scopes.*;
 
 public class Parser {
 	final String varValuesRegex = "\\s*(\\w+)\\s*(\\=\\s*(\\w+)\\s*)?";
-	final String varLineRegex = "([a-zA-Z]+)\\s+(" + varValuesRegex + ",)*(" + varValuesRegex + ")?\\s*";
+	final String varDeclerationRegex = "([a-zA-Z]+)\\s+(" + varValuesRegex + ",)*(" + varValuesRegex + ")?\\s*";
+	final String varLineRegex = varDeclerationRegex + END_OF_CODE_LINE;
 	final String methodValuesRegex = "([a-zA-Z]+)\\s+([\\p{Punct}\\w]+)";
 	final String methodStartRegex = "void\\s+([\\w]+)\\s*\\(\\s*(("+ methodValuesRegex +"\\s*,\\s*)*\\s*(" + methodValuesRegex + ")?)\\s*\\)\\s*\\{";
 	final String startScopeRegex = "(while|if)\\s*\\(\\s*([\\w]+)\\s*((\\|\\||\\&\\&)\\s*([\\w]+)\\s*)*\\s*\\)s*\\{";
@@ -53,13 +54,13 @@ public class Parser {
 				m.matches();
 				String MethodName = m.group(1);
 				String[] methodParameters = m.group(2).split(",");
-				Scope method = getChunk();
+				Scope method = parseScope();
 				for (String parameter: methodParameters) {
 					method.addAllVars(handleVar(parameter.trim()));
 				}
 				methods.add(method);
 				line = buffer.readLine();
-			} else if(Pattern.matches(varLineRegex + END_OF_CODE_LINE, line)){
+			} else if(Pattern.matches(varLineRegex, line)){
 				//calls handleVar method to check for variables in this line.
 				globalVars.addAll(handleVar(line.substring(0, line.lastIndexOf(END_OF_CODE_LINE))));
 				line = buffer.readLine();
@@ -79,7 +80,7 @@ public class Parser {
 	}
 	
 	
-	public Scope getChunk() throws IOException, badFileFormatException {
+	public Scope parseScope() throws IOException, badFileFormatException {
 		Scope sc = new Scope();
 		String currentLine = buffer.readLine();
 		
@@ -90,7 +91,7 @@ public class Parser {
 				currentLine = buffer.readLine();
 				continue;
 			}
-			if(Pattern.matches(varLineRegex + END_OF_CODE_LINE, currentLine)){
+			if(Pattern.matches(varLineRegex, currentLine)){
 				//calls handleVar method to check for variables in this line.
 				sc.addAllVars(handleVar(currentLine.substring(0, currentLine.lastIndexOf(END_OF_CODE_LINE))));
 				currentLine = buffer.readLine();
@@ -132,7 +133,7 @@ public class Parser {
 	//TODO!! fix method so it works on method-parameters.
 	private ArrayList<Variable> handleVar(String currentLine) throws badFileFormatException {
 		ArrayList<Variable> vars = new ArrayList<>();
-		Pattern p = Pattern.compile(varLineRegex);
+		Pattern p = Pattern.compile(varDeclerationRegex);
 		Matcher m = p.matcher(currentLine);
 		m.matches();
 		String varType = m.group(1);
