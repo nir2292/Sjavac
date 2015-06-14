@@ -17,8 +17,9 @@ public class Sjavac {
 		File sjavac = new File(args[0]);
 		try {
 			Parser parser = new Parser(sjavac);
-			Validator v = new Validator(parser.ParseFile());
 			parser.ParseFile();
+			
+			Validator v = new Validator(parser.ParseFile());
 			v.isValid();
 			
 		} catch (IOException | badFileFormatException e1) {

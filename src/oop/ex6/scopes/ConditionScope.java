@@ -11,14 +11,23 @@ public class ConditionScope extends Scope {
 	private Matcher conditionBooleanMatcher;
 	private String[] conditions;
 	private Matcher conditionValueMatcher;
-
+	
+	public ConditionScope() throws badConditionFormat, noSuchVariable {
+		super();
+	}
+	
 	public ConditionScope(String[] conditions) throws badConditionFormat, noSuchVariable {
 		super();
 		this.conditions = conditions;
 	}
+	
 
 	public ConditionScope(String[] conditions, ArrayList<Variable> vars) throws badConditionFormat, noSuchVariable {
 		super(vars);
+		this.conditions = conditions;
+	}
+	
+	public void addContitions(String[] conditions) {
 		this.conditions = conditions;
 	}
 	
