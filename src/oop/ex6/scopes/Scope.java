@@ -5,15 +5,18 @@ import oop.ex6.main.*;
 
 public class Scope {
 	private ArrayList<Variable> knownVariables;
+	private ArrayList<Variable> changedVars;
 	private ArrayList<Scope> internalScopes;
 	
 	public Scope(){
 		this.knownVariables = new ArrayList<>();
-		this.internalScopes = new ArrayList<>(); 
+		this.changedVars = new ArrayList<>();
+		this.internalScopes = new ArrayList<>();
 	}
 	
 	public Scope(ArrayList<Variable> vars){
 		this.knownVariables = new ArrayList<>();
+		this.changedVars = new ArrayList<>();
 		this.internalScopes = new ArrayList<>();
 		addAllVars(vars);
 	}
@@ -30,6 +33,18 @@ public class Scope {
 			addVar(var);
 	}
 	
+	public void addAssignmentVar(Variable var){
+		this.changedVars.add(var);
+	}
+	
+	public ArrayList<Variable> getKnownVariables() {
+		return knownVariables;
+	}
+
+	public ArrayList<Variable> getChangedVars() {
+		return changedVars;
+	}
+
 	public boolean knowsVariable(Variable var){
 		if(knownVariables.contains(var))
 			return true;

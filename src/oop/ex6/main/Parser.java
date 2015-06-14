@@ -15,7 +15,7 @@ public class Parser {
 	final String varLineRegex = "([a-zA-Z]+)\\s+(" + varValuesRegex + ",)*(" + varValuesRegex + ")?\\s*";
 	final String methodValuesRegex = "([a-zA-Z]+)\\s+([\\p{Punct}\\w]+)";
 	final String methodStartRegex = "void\\s+([\\w]+)\\s*\\(\\s*(("+ methodValuesRegex +"\\s*,\\s*)*\\s*(" + methodValuesRegex + ")?)\\s*\\)\\s*\\{";
-	final String startScopeRegex = "(if|while)\\s+\\(([TODO])\\)\\s*\\{";
+	final String startScopeRegex = "(while|if)\\s*\\(\\s*([\\w]+)\\s*((\\|\\||\\&\\&)\\s*([\\w]+)\\s*)*\\s*\\)s*\\{";
 	final String endScopeRegex = "\\}";
 	static final String COMMENT_PREFIX = "//";
 	static final String END_OF_CODE_LINE = ";";
@@ -30,16 +30,20 @@ public class Parser {
 		this.buffer =  new BufferedReader(new FileReader(path));
 		this.methods = new ArrayList<>();
 		this.globalVars = new ArrayList<>();
-		setMethods();
-		initializeVars(this.methods);
 	}
 	
+	public ArrayList<Scope> ParseFile() throws IOException, badFileFormatException{
+		setMethods();
+		initializeVars(this.methods);
+		return this.methods;
+	}
 
 	private void setMethods() throws IOException, badFileFormatException {
 		String line = buffer.readLine();
 		Pattern p;
 		Matcher m;
 		while(line != null) {
+			line = line.trim();
 			if (checkToIgnore(line)) {
 				line = buffer.readLine();
 				continue;

@@ -44,6 +44,5 @@ public class Variable {
 		} else {
 			throw new illegalValueException("Bad value for type " + var.toString());
 		}
-		this.value = value;
 	}
 }
