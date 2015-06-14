@@ -16,7 +16,7 @@ public class Parser {
 	final String varLineRegex = varDeclerationRegex + END_OF_CODE_LINE;
 	final String methodValuesRegex = "([a-zA-Z]+)\\s+([\\p{Punct}\\w]+)";
 	final String methodStartRegex = "void\\s+([\\w]+)\\s*\\(\\s*(("+ methodValuesRegex +"\\s*,\\s*)*\\s*(" + methodValuesRegex + ")?)\\s*\\)\\s*\\{";
-	final String startScopeRegex = "(while|if)\\s*\\(\\s*([\\w]+)\\s*((\\|\\||\\&\\&)\\s*([\\w]+)\\s*)*\\s*\\)s*\\{";
+	final String startScopeRegex = "(while|if)\\s*\\(\\s*([\\w]+)\\s*((\\|\\||\\&\\&)\\s*([\\w]+)\\s*)*\\s*\\)\\s*\\{";
 	final String endScopeRegex = "\\}";
 	static final String COMMENT_PREFIX = "//";
 	static final String END_OF_CODE_LINE = ";";
