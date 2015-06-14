@@ -9,19 +9,25 @@ import oop.ex6.main.noSuchVariable;
 
 public class ConditionScope extends Scope {
 	private Matcher conditionBooleanMatcher;
+	private String[] conditions;
 	private Matcher conditionValueMatcher;
 
 	public ConditionScope(String[] conditions) throws badConditionFormat, noSuchVariable {
 		super();
-		addConditions(conditions);
+		this.conditions = conditions;
 	}
 
 	public ConditionScope(String[] conditions, ArrayList<Variable> vars) throws badConditionFormat, noSuchVariable {
 		super(vars);
-		addConditions(conditions);
+		this.conditions = conditions;
+	}
+	
+	public boolean validateConditions() throws badConditionFormat, noSuchVariable{
+		addConditions();
+		return true;
 	}
 
-	private void addConditions(String[] conditions) throws badConditionFormat, noSuchVariable {
+	private void addConditions() throws badConditionFormat, noSuchVariable {
 		for(String condition:conditions){
 			conditionBooleanMatcher = Type.BOOLEAN.getMatcher(condition);
 			if(conditionBooleanMatcher.matches())

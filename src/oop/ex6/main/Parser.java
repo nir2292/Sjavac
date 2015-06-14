@@ -12,7 +12,7 @@ import oop.ex6.scopes.*;
 
 public class Parser {
 	final String varValuesRegex = "\\s*(\\w+)\\s*(\\=\\s*(\\w+)\\s*)?";
-	final String varDeclerationRegex = "([a-zA-Z]+)\\s+(" + varValuesRegex + ",)*(" + varValuesRegex + ")?\\s*";
+	final String varDeclerationRegex = "\\s*([a-zA-Z]+)\\s+(" + varValuesRegex + ",)*(" + varValuesRegex + ")?\\s*";
 	final String varLineRegex = varDeclerationRegex + END_OF_CODE_LINE;
 	final String methodValuesRegex = "([a-zA-Z]+)\\s+([\\p{Punct}\\w]+)";
 	final String methodStartRegex = "void\\s+([\\w]+)\\s*\\(\\s*(("+ methodValuesRegex +"\\s*,\\s*)*\\s*(" + methodValuesRegex + ")?)\\s*\\)\\s*\\{";
@@ -98,7 +98,7 @@ public class Parser {
 				continue;
 			}
 			if(Pattern.matches(startScopeRegex, currentLine)){
-			handleConditionScope(sc, currentLine.substring(0, currentLine.indexOf("(")));
+			handleConditionScope(sc, currentLine.substring(currentLine.indexOf("("), currentLine.length()));
 			currentLine = buffer.readLine();
 			}
 			if(Pattern.matches(endScopeRegex, currentLine)){
@@ -147,9 +147,9 @@ public class Parser {
 				throw new noSuchTypeException("illegal value :" + varType);
 			}
 			if (m.group(3) != null) {
-				vars.add(new Variable(var, m.group(1) , m.group(3)));
+				vars.add(new Variable(var, m.group(1) , m.group(3), false));
 			} else {
-				vars.add(new Variable(var, m.group(1)));
+				vars.add(new Variable(var, m.group(1), false));
 			}
 		}
 		return vars;	

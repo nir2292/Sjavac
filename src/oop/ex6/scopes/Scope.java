@@ -6,7 +6,7 @@ import oop.ex6.main.*;
 public class Scope {
 	private ArrayList<Variable> knownVariables;
 	private ArrayList<Variable> changedVars;
-	private ArrayList<Scope> internalScopes;
+	private ArrayList<ConditionScope> internalScopes;
 	
 	public Scope(){
 		this.knownVariables = new ArrayList<>();
@@ -44,6 +44,10 @@ public class Scope {
 	public ArrayList<Variable> getChangedVars() {
 		return changedVars;
 	}
+	
+	public ArrayList<ConditionScope> getInternalScopes(){
+		return this.internalScopes;
+	}
 
 	public boolean knowsVariable(Variable var){
 		if(knownVariables.contains(var))
@@ -58,11 +62,11 @@ public class Scope {
 		throw new noSuchVariable("Unknown variable" + varName);
 	}
 	
-	public void setVariableValue(String varName, String value) throws noSuchVariable, illegalValueException{
+	public void setVariableValue(String varName, String value) throws badFileFormatException{
 		getVariable(varName).setValue(value);
 	}
 	
-	public void addScope(Scope scope) {
+	public void addScope(ConditionScope scope) {
 		internalScopes.add(scope);
 	}
 }
