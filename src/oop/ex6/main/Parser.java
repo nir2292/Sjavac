@@ -97,8 +97,8 @@ public class Parser {
 				continue;
 			}
 			if(Pattern.matches(startScopeRegex, currentLine)){
-				sc.addScope(getChunk());
-				continue;
+			handleConditionScope(sc, currentLine.substring(0, currentLine.indexOf("(")));
+			currentLine = buffer.readLine();
 			}
 			if(Pattern.matches(endScopeRegex, currentLine)){
 				return sc;
@@ -108,6 +108,13 @@ public class Parser {
 		throw new illegalLineException("unexpected EOF");
 	}
 	
+	private void handleConditionScope(Scope sc, String subString) throws badConditionFormat, noSuchVariable {
+		subString = subString.substring(1, subString.lastIndexOf(")"));
+		String[] conditions = subString.split("\\|\\||\\&\\&");
+		ConditionScope cScope = new ConditionScope(conditions);
+		sc.addScope(cScope);
+	}
+
 	private void validateMethods() {
 		return;
 	}
