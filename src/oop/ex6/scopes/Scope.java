@@ -6,7 +6,7 @@ import oop.ex6.main.*;
 public class Scope {
 	private ArrayList<Variable> knownVariables;
 	private ArrayList<Variable> changedVars;
-	private ArrayList<ConditionScope> internalScopes;
+	private ArrayList<Scope> internalScopes;
 	
 	public Scope(){
 		this.knownVariables = new ArrayList<>();
@@ -51,7 +51,7 @@ public class Scope {
 		return changedVars;
 	}
 	
-	public ArrayList<ConditionScope> getInternalScopes(){
+	public ArrayList<Scope> getInternalScopes(){
 		return this.internalScopes;
 	}
 
@@ -72,7 +72,7 @@ public class Scope {
 		getVariable(varName).setValue(value);
 	}
 	
-	public void addScope(ConditionScope scope) {
+	public void addScope(Scope scope) {
 		internalScopes.add(scope);
 	}
 }

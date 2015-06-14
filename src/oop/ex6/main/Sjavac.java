@@ -13,16 +13,19 @@ import oop.ex6.scopes.Scope;
 public class Sjavac {
 	
 	
+	public static void printScopeTree() {
+		
+	}
 	
 	public static void main(String[] args) {
 		
 		File sjavac = new File(args[0]);
 		try {
 			Parser parser = new Parser(sjavac);
-			ArrayList<Scope> a = parser.ParseFile();
+			Scope a = parser.parseFile();
 			
-			Validator v = new Validator(a);
-			v.isValid();
+			//Validator v = new Validator(a);
+			//v.isValid();
 			
 		} catch (IOException | badFileFormatException e1) {
 			System.out.println("ERROR");

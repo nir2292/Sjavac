@@ -11,129 +11,72 @@ import java.util.regex.Pattern;
 import oop.ex6.scopes.*;
 
 public class Parser {
-	final String varValuesRegex = "\\s*(\\w+)\\s*(\\=\\s*(\\w+)\\s*)?";
-	final String varDeclerationRegex = "\\s*([a-zA-Z]+)\\s+(" + varValuesRegex + ",)*(" + varValuesRegex + ")?\\s*";
-	final String varLineRegex = varDeclerationRegex + END_OF_CODE_LINE;
-	final String methodValuesRegex = "([a-zA-Z]+)\\s+([\\p{Punct}\\w]+)";
-	final String methodStartRegex = "void\\s+([\\w]+)\\s*\\(\\s*(("+ methodValuesRegex +"\\s*,\\s*)*\\s*(" + methodValuesRegex + ")?)\\s*\\)\\s*\\{";
-	final String startScopeRegex = "(while|if)\\s*\\(\\s*([\\w]+)\\s*((\\|\\||\\&\\&)\\s*([\\w]+)\\s*)*\\s*\\)\\s*\\{";
-	final String endScopeRegex = "\\}";
-	static final String COMMENT_PREFIX = "//";
 	static final String END_OF_CODE_LINE = ";";
+	public static final String START_OF_FILE = "START";
+	final static String varValuesRegex = "\\s*(\\w+)\\s*(\\=\\s*(\\w+)\\s*)?";
+	final static String varDeclerationRegex = "\\s*([a-zA-Z]+)\\s+(" + varValuesRegex + ",)*(" + varValuesRegex + ")?\\s*";
+	final static String varLineRegex = varDeclerationRegex + END_OF_CODE_LINE;
+	final static String HEADER = "[\\w\\s]+\\([\\w\\s\\,]*\\)\\s*\\{";
+	final static String methodValuesRegex = "([a-zA-Z]+)\\s+([\\p{Punct}\\w]+)";
+	final static String methodHeader = "void\\s+([\\w]+)\\s*\\(\\s*(("+ methodValuesRegex +"\\s*,\\s*)*\\s*(" + methodValuesRegex + ")?)\\s*\\)\\s*\\{";
+	final static String ConditionalScopeHeader = "(while|if)\\s*\\(\\s*([\\w]+)\\s*((\\|\\||\\&\\&)\\s*([\\w]+)\\s*)*\\s*\\)\\s*\\{";
+	final static String endScopeRegex = "\\}";
+	static final String COMMENT_PREFIX = "//";
 	static final String EMPTY_LINE = "[\\s]*";
 	
 	static final String LEGAL_CHARS = "\\!#\\$\\%\\&\\(\\)\\*\\+\\-\\.\\/\\:\\;\\<\\=\\>\\?@\\[\\]\\^\\_\\`{\\|}\\~";
 	BufferedReader buffer;
-	private ArrayList<Scope> methods;
-	private ArrayList<Variable> globalVars;
+	private Scope mainScope;
 	
 	public Parser(File path) throws IOException, badFileFormatException {
 		this.buffer =  new BufferedReader(new FileReader(path));
-		this.methods = new ArrayList<>();
-		this.globalVars = new ArrayList<>();
 	}
 	
-	public ArrayList<Scope> ParseFile() throws IOException, badFileFormatException{
-		setMethods();
-		initializeVars(this.methods);
-		return this.methods;
-	}
-
-	private void setMethods() throws IOException, badFileFormatException {
-		String line = buffer.readLine();
-		Pattern p;
-		Matcher m;
-		while(line != null) {
-			line = line.trim();
-			if (checkToIgnore(line)) {
-				line = buffer.readLine();
-				continue;
-			} else if  (Pattern.matches(methodStartRegex, line)) {
-				p = Pattern.compile(methodStartRegex);
-				m = p.matcher(line);
-				m.matches();
-				String MethodName = m.group(1);
-				String[] methodParameters = m.group(2).split(",");
-				Scope method = parseScope();
-				for (String parameter: methodParameters) {
-					method.addAllVars(handleVar(parameter.trim()));
-				}
-				methods.add(method);
-				line = buffer.readLine();
-			} else if(Pattern.matches(varLineRegex, line)){
-				//calls handleVar method to check for variables in this line.
-				globalVars.addAll(handleVar(line.substring(0, line.lastIndexOf(END_OF_CODE_LINE))));
-				line = buffer.readLine();
-			} else {
-				throw new illegalLineException("Line does not match format");
-			}
-		}
-		for (Scope method: methods) {
-			method.addAllVars(globalVars);
-		}
+	public Scope parseFile() throws IOException, badFileFormatException{
+		parseMain();
+		//setMethods();
+		//initializeVars(this.methods);
+		return this.mainScope;
 	}
 	
-	private void initializeVars(ArrayList<Scope> methods){
-		for (Scope method: methods) {
-			method.addAllVars(globalVars);
-		}
-	}
-	
-	
-	public Scope parseScope() throws IOException, badFileFormatException {
-		Scope sc = new Scope();
-		String currentLine = buffer.readLine();
+	public void parseMain() throws IOException, badFileFormatException {
+		mainScope = parseScope(START_OF_FILE);
 		
+	}
+	
+//	private void initializeVars(ArrayList<Scope> methods){
+//		for (Scope method: methods) {
+//			method.addAllVars(globalVars);
+//		}
+//	}
+	
+	public Scope parseScope(String header) throws IOException, badFileFormatException {
+		Scope sc = ScopeFactory.getScope(header);
+		String currentLine = buffer.readLine().trim();
 		while(currentLine != null){
-			currentLine = currentLine.trim();
 			//checks if a line should be ignores (comment, empty line, etc)
 			if (checkToIgnore(currentLine)) {
-				currentLine = buffer.readLine();
+				currentLine = buffer.readLine().trim();
 				continue;
-			}
-			if(Pattern.matches(varLineRegex, currentLine)){
+			} else if (Pattern.matches(HEADER, currentLine)) {
+				sc.addScope(parseScope(currentLine));
+				currentLine = buffer.readLine().trim();
+				continue;
+			} else if (Pattern.matches(varLineRegex, currentLine)) {
 				//calls handleVar method to check for variables in this line.
 				sc.addAllVars(handleVar(currentLine.substring(0, currentLine.lastIndexOf(END_OF_CODE_LINE))));
-				currentLine = buffer.readLine();
+				currentLine = buffer.readLine().trim();
 				continue;
-			}
-			if(Pattern.matches(startScopeRegex, currentLine)){
-				Scope scope = parseScope();
-				ConditionScope condScope = new ConditionScope(scope);
-				condScope.addContitions(handleConditionScope(currentLine.substring(currentLine.indexOf("("), currentLine.length())));
-				sc.addScope(condScope);
-				currentLine = buffer.readLine();
-				continue;
-			}
-			if(Pattern.matches(endScopeRegex, currentLine)){
+			} else if(Pattern.matches(endScopeRegex, currentLine)){
 				return sc;
-			}
+			} else {
 			throw new illegalLineException("Line does not match format");
+			}
 		}
 		throw new illegalLineException("unexpected EOF");
 	}
 	
-	private String[] handleConditionScope(String subString) throws badConditionFormat, noSuchVariable {
-		subString = subString.substring(1, subString.lastIndexOf(")"));
-		return subString.split("\\|\\||\\&\\&");
-	}
-
-	private void validateMethods() {
-		return;
-	}
-	
-	private boolean checkToIgnore(String line) {
-		if (line.startsWith(COMMENT_PREFIX)){
-			return true;
-		}
-		if (Pattern.matches(EMPTY_LINE, line)){
-			return true;
-		}
-		return false;
-	}
-	
-	//TODO!! fix method so it works on method-parameters.
-	private ArrayList<Variable> handleVar(String currentLine) throws badFileFormatException {
+	public static ArrayList<Variable> handleVar(String currentLine) throws badFileFormatException {
 		ArrayList<Variable> vars = new ArrayList<>();
 		Pattern p = Pattern.compile(varDeclerationRegex);
 		Matcher m = p.matcher(currentLine);
@@ -156,27 +99,24 @@ public class Parser {
 		}
 		return vars;	
 	}
+	
+	public static String[] handleConditionScope(String subString) throws badConditionFormat, noSuchVariable {
+		subString = subString.substring(1, subString.lastIndexOf(")"));
+		return subString.split("\\|\\||\\&\\&");
+	}
+
+	private void validateMethods() {
+		return;
+	}
+	
+	private boolean checkToIgnore(String line) {
+		if (line.startsWith(COMMENT_PREFIX)){
+			return true;
+		}
+		if (Pattern.matches(EMPTY_LINE, line)){
+			return true;
+		}
+		return false;
+	}
+	
 }
-//
-////some int member
-//final int a = 5;
-//
-////Another int member
-//final int b = a;
-//
-////now - a string member
-//String s;
-//
-//void boo(int a, int b, String s) {
-//if (true) {
-//	boo(1,2,"hello");
-//	while (false) {
-//		soo(true);
-//	}
-//}
-//return;
-//}
-//
-//void soo(boolean b) {
-//return;
-//}

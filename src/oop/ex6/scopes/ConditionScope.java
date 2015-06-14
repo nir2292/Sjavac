@@ -12,17 +12,17 @@ public class ConditionScope extends Scope {
 	private String[] conditions;
 	private Matcher conditionValueMatcher;
 	
-	public ConditionScope() throws badConditionFormat, noSuchVariable {
+	public ConditionScope() {
 		super();
 	}
 	
-	public ConditionScope(String[] conditions) throws badConditionFormat, noSuchVariable {
+	public ConditionScope(String[] conditions) {
 		super();
 		this.conditions = conditions;
 	}
 	
 
-	public ConditionScope(String[] conditions, ArrayList<Variable> vars) throws badConditionFormat, noSuchVariable {
+	public ConditionScope(String[] conditions, ArrayList<Variable> vars) {
 		super(vars);
 		this.conditions = conditions;
 	}
