@@ -98,8 +98,9 @@ public class Parser {
 				continue;
 			}
 			if(Pattern.matches(startScopeRegex, currentLine)){
-			handleConditionScope(sc, currentLine.substring(currentLine.indexOf("("), currentLine.length()));
-			currentLine = buffer.readLine();
+				handleConditionScope(sc, currentLine.substring(currentLine.indexOf("("), currentLine.length()));
+				currentLine = buffer.readLine();
+				continue;
 			}
 			if(Pattern.matches(endScopeRegex, currentLine)){
 				return sc;
