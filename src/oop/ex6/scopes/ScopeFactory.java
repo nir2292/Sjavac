@@ -32,7 +32,6 @@ public class ScopeFactory {
 			}
 			return scope;
 		} else if (Pattern.matches(ConditionalScopeHeader, header)) {
-			
 			p = Pattern.compile(ConditionalScopeHeader);
 			m = p.matcher(header);
 			m.matches();			

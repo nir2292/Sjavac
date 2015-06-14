@@ -51,30 +51,35 @@ public class Parser {
 	
 	public Scope parseScope(String header) throws IOException, badFileFormatException {
 		Scope sc = ScopeFactory.getScope(header);
-		String currentLine = buffer.readLine().trim();
+		String currentLine = buffer.readLine();
 		while(currentLine != null){
+			currentLine = currentLine.trim();
 			//checks if a line should be ignores (comment, empty line, etc)
 			if (checkToIgnore(currentLine)) {
-				currentLine = buffer.readLine().trim();
+				currentLine = buffer.readLine();
 				continue;
 			} else if (Pattern.matches(HEADER, currentLine)) {
 				Scope newScope = parseScope(currentLine);
 				newScope.addAllVars(sc.getKnownVariables());
 				sc.addScope(newScope);
-				currentLine = buffer.readLine().trim();
+				currentLine = buffer.readLine();
 				continue;
 			} else if (Pattern.matches(varLineRegex, currentLine)) {
 				//calls handleVar method to check for variables in this line.
 				sc.addAllVars(handleVar(currentLine.substring(0, currentLine.lastIndexOf(END_OF_CODE_LINE))));
-				currentLine = buffer.readLine().trim();
+				currentLine = buffer.readLine();
 				continue;
 			} else if(Pattern.matches(endScopeRegex, currentLine)){
 				return sc;
 			} else {
-			throw new illegalLineException("Line does not match format");
+				throw new illegalLineException("Line does not match format");
 			}
 		}
-		throw new illegalLineException("unexpected EOF");
+		if (sc.getName() == START_OF_FILE) {
+			return sc;
+		} else {
+			throw new illegalLineException("unexpected EOF");
+		}
 	}
 	
 	/*
