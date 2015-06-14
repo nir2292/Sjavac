@@ -31,7 +31,7 @@ public class Variable {
 	}
 	
 	public String toString() {
-		return name + ": (" + var + " , " + value + ")";
+		return name + "(" + var + "," + value + ")";
 	}
 	public String getName() {
 		return this.name;

@@ -41,7 +41,6 @@ public class Parser {
 	
 	public void parseMain() throws IOException, badFileFormatException {
 		mainScope = parseScope(START_OF_FILE);
-		
 	}
 	
 //	private void initializeVars(ArrayList<Scope> methods){
@@ -59,7 +58,9 @@ public class Parser {
 				currentLine = buffer.readLine().trim();
 				continue;
 			} else if (Pattern.matches(HEADER, currentLine)) {
-				sc.addScope(parseScope(currentLine));
+				Scope newScope = parseScope(currentLine);
+				newScope.addAllVars(sc.getKnownVariables());
+				sc.addScope(newScope);
 				currentLine = buffer.readLine().trim();
 				continue;
 			} else if (Pattern.matches(varLineRegex, currentLine)) {
@@ -76,6 +77,10 @@ public class Parser {
 		throw new illegalLineException("unexpected EOF");
 	}
 	
+	/*
+	 * Receives a line declaring a variable.
+	 * for example: int a = 3 \ int a \ int a,b,c=6
+	 */
 	public static ArrayList<Variable> handleVar(String currentLine) throws badFileFormatException {
 		ArrayList<Variable> vars = new ArrayList<>();
 		Pattern p = Pattern.compile(varDeclerationRegex);
@@ -98,11 +103,6 @@ public class Parser {
 			}
 		}
 		return vars;	
-	}
-	
-	public static String[] handleConditionScope(String subString) throws badConditionFormat, noSuchVariable {
-		subString = subString.substring(1, subString.lastIndexOf(")"));
-		return subString.split("\\|\\||\\&\\&");
 	}
 
 	private void validateMethods() {

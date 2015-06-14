@@ -15,9 +15,6 @@ public class Sjavac {
 	
 	public static void printScopeTree(Scope mainScope) {
 		System.out.println(mainScope);
-		for (Variable var: mainScope.getKnownVariables()) {
-			System.out.println(var);
-		}
 		for (Scope interScope: mainScope.getInternalScopes()) {
 			printScopeTree(interScope);
 		}

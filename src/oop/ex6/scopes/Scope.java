@@ -7,18 +7,33 @@ public class Scope {
 	private ArrayList<Variable> knownVariables;
 	private ArrayList<Variable> changedVars;
 	private ArrayList<Scope> internalScopes;
+	private String name;
 	
-	public Scope(){
+	public Scope(String name){
 		this.knownVariables = new ArrayList<>();
 		this.changedVars = new ArrayList<>();
 		this.internalScopes = new ArrayList<>();
+		this.name = name;
 	}
 	
-	public Scope(ArrayList<Variable> vars){
+	public Scope(String name, ArrayList<Variable> vars){
 		this.knownVariables = new ArrayList<>();
 		this.changedVars = new ArrayList<>();
 		this.internalScopes = new ArrayList<>();
+		this.name = name;
 		addAllVars(vars);
+	}
+	
+	public String toString() {
+		String representation = "Scope: " + this.getName() + ", variables: ";
+		for (Variable var : knownVariables) {
+			representation = representation + var + ", ";
+		}
+		return representation;
+	}
+	
+	public String getName() {
+		return this.name;
 	}
 	
 	public void addVar(Variable var){

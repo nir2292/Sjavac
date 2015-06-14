@@ -12,27 +12,27 @@ public class ConditionScope extends Scope {
 	private String[] conditions;
 	private Matcher conditionValueMatcher;
 	
-	public ConditionScope() {
-		super();
+	public ConditionScope(String name) {
+		super(name);
 	}
 	
-	public ConditionScope(String[] conditions) {
-		super();
+	public ConditionScope(String name, String[] conditions) {
+		super(name);
 		this.conditions = conditions;
 	}
 	
 
-	public ConditionScope(String[] conditions, ArrayList<Variable> vars) {
-		super(vars);
+	public ConditionScope(String name, String[] conditions, ArrayList<Variable> vars) {
+		super(name, vars);
 		this.conditions = conditions;
 	}
-
-	public ConditionScope(Scope scope) {
-		super();
-		addAllVars(scope.getKnownVariables());
-		addAllAssignmentVar(scope.getChangedVars());
+	public String toString() {
+		String representation = super.toString() + " Conditions: ";
+		for (String condition : conditions) {
+			representation = representation + condition + ", ";
+		}
+		return representation;
 	}
-
 	public void addContitions(String[] conditions) {
 		this.conditions = conditions;
 	}
