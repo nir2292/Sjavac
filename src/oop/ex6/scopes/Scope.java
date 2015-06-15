@@ -5,7 +5,7 @@ import oop.ex6.main.*;
 
 public class Scope {
 	private ArrayList<Variable> knownVariables;
-	private ArrayList<Variable> changedVars;
+	private ArrayList<String> changedVars;
 	private ArrayList<Scope> internalScopes;
 	private String name;
 	
@@ -24,11 +24,15 @@ public class Scope {
 		addAllVars(vars);
 	}
 	
+	@Override
 	public String toString() {
 		String representation = "Scope: " + this.getName() + ", variables: ";
 		for (Variable var : knownVariables) {
 			representation = representation + var + ", ";
 		}
+		representation = representation + " Variables to change: ";
+		for(String var:changedVars)
+			representation = representation + var + " ";
 		return representation;
 	}
 	
@@ -48,21 +52,16 @@ public class Scope {
 			addVar(var);
 	}
 	
-	public void addAssignmentVar(Variable var){
+	public void addAssignmentVar(String var){
 		this.changedVars.add(var);
 	}
 	
-
-	public void addAllAssignmentVar(ArrayList<Variable> changedVars) {
-		for(Variable var:changedVars)
-			addAssignmentVar(var);
-	}
 	
 	public ArrayList<Variable> getKnownVariables() {
 		return knownVariables;
 	}
 
-	public ArrayList<Variable> getChangedVars() {
+	public ArrayList<String> getChangedVars() {
 		return changedVars;
 	}
 	
@@ -80,7 +79,7 @@ public class Scope {
 		for(Variable var:knownVariables)
 			if(var.getName().equals(varName))
 				return var;
-		throw new noSuchVariable("Unknown variable" + varName);
+		throw new noSuchVariable("Unknown variable " + varName);
 	}
 	
 	public void setVariableValue(String varName, String value) throws badFileFormatException{

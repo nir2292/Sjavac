@@ -20,8 +20,8 @@ public class Sjavac {
 			Parser parser = new Parser(sjavac);
 			Scope a = parser.parseFile();
 			printScopeTree(a);
-			//Validator v = new Validator(a);
-			//v.isValid();
+//			Validator v = new Validator(a);
+//			v.isValid();
 			
 		} catch (IOException | badFileFormatException e1) {
 			System.out.println("ERROR");

@@ -13,6 +13,7 @@ import oop.ex6.scopes.*;
 public class Parser {
 	static final String END_OF_CODE_LINE = ";";
 	public static final String START_OF_FILE = "START";
+	final static String varChangeRegex = "(\\w+)\\s*=\\s*(\\w+)\\s*;";
 	final static String varValuesRegex = "\\s*(\\w+)\\s*(\\=\\s*(\\w+)\\s*)?";
 	final static String varDeclerationRegex = "\\s*([a-zA-Z]+)\\s+(" + varValuesRegex + ",)*(" + varValuesRegex + ")?\\s*";
 	final static String varLineRegex = varDeclerationRegex + END_OF_CODE_LINE;
@@ -58,7 +59,7 @@ public class Parser {
 			if (checkToIgnore(currentLine)) {
 				currentLine = buffer.readLine();
 				continue;
-			} else if (Pattern.matches(HEADER, currentLine)) {
+			} else if (Pattern.matches(HEADER, currentLine) || Pattern.matches(ConditionalScopeHeader, currentLine)) {
 				Scope newScope = parseScope(currentLine);
 				newScope.addAllVars(sc.getKnownVariables());
 				sc.addScope(newScope);
@@ -67,6 +68,10 @@ public class Parser {
 			} else if (Pattern.matches(varLineRegex, currentLine)) {
 				//calls handleVar method to check for variables in this line.
 				sc.addAllVars(handleVar(currentLine.substring(0, currentLine.lastIndexOf(END_OF_CODE_LINE))));
+				currentLine = buffer.readLine();
+				continue;
+			} else if(Pattern.matches(varChangeRegex, currentLine)){
+				sc.addAssignmentVar(handleAssignmentVar(currentLine));
 				currentLine = buffer.readLine();
 				continue;
 			} else if(Pattern.matches(endScopeRegex, currentLine)){
@@ -82,6 +87,15 @@ public class Parser {
 		}
 	}
 	
+	private String handleAssignmentVar(String currentLine) {
+		Pattern p = Pattern.compile(varChangeRegex);
+		Matcher m = p.matcher(currentLine);
+		m.matches();
+		String varName = m.group(1);
+		String varNewValue = m.group(2);
+		return varName + ", " + varNewValue;
+	}
+
 	/*
 	 * Receives a line declaring a variable.
 	 * for example: int a = 3 \ int a \ int a,b,c=6

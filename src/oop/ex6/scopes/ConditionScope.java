@@ -26,6 +26,7 @@ public class ConditionScope extends Scope {
 		super(name, vars);
 		this.conditions = conditions;
 	}
+	@Override
 	public String toString() {
 		String representation = super.toString() + " Conditions: ";
 		for (String condition : conditions) {
@@ -43,11 +44,15 @@ public class ConditionScope extends Scope {
 	}
 
 	private void addConditions() throws badConditionFormat, noSuchVariable {
-		for(String condition:conditions){
+		ArrayList<String> splitConditions = new ArrayList<>();
+		for(String condition:conditions)
+			System.out.println(condition);
+		for(String condition:splitConditions){
 			conditionBooleanMatcher = Type.BOOLEAN.getMatcher(condition);
 			if(conditionBooleanMatcher.matches())
 				continue;
 			else{
+				System.out.println("Condition is: " + condition);
 				conditionValueMatcher = Type.BOOLEAN.getMatcher(getVariable(condition).getValue());
 				if(conditionValueMatcher.matches())
 					continue;

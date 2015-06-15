@@ -6,33 +6,41 @@ import oop.ex6.scopes.*;
 
 public class Validator {
 	private final String valueAssignmentRegex = "\\w+\\=\\w+\\;";
-	private ArrayList<Scope> scopes;
+	private Scope mainScope;
+	private ArrayList<Scope> methods;
 	
-	public Validator(ArrayList<Scope> scopesArray) {
-		this.scopes = scopesArray;
+	public Validator(Scope scope) {
+		this.mainScope = scope;
+		this.methods = mainScope.getInternalScopes();
 	}
 	
-	public boolean isValid() throws badConditionFormat, noSuchVariable{
-		return ValidateScopes() && ValidateConditions();
+	public boolean isValid() throws badFileFormatException{
+		return ValidateScopes();// && ValidateConditions();
 	}
-	
-	private boolean ValidateConditions() throws badConditionFormat, noSuchVariable {
-		for(Scope scope:scopes){
-//			ArrayList<ConditionScope> conditionScopes = scope.getInternalScopes();
-//			for(ConditionScope cScope:conditionScopes)
-//				cScope.validateConditions();
+
+	private boolean ValidateScopes() throws badFileFormatException{
+		for(Scope method:methods){
+			if(!validateScope(method))
+				return false;
 		}
 		return true;
 	}
 
-	private boolean ValidateScopes(){
-		for(Scope scope:scopes){
-			ArrayList<Variable> knownVariables = scope.getKnownVariables();
-			ArrayList<Variable> changedVariables = scope.getChangedVars();
-			for(Variable var:changedVariables)
-				if(!knownVariables.contains(var))
-					return false;
+	private boolean validateScope(Scope method) throws badFileFormatException {
+		ArrayList<Variable> knownVariables = method.getKnownVariables();
+		ArrayList<String> changedVariables = method.getChangedVars();
+		ArrayList<Scope> internalScopes = method.getInternalScopes();
+		for(String var:changedVariables){
+			String varInfo[] = var.split("\\, ");
+			method.setVariableValue(varInfo[0], varInfo[1]);
 		}
+		if(method.getName().equals("while") || method.getName().equals("if")){
+			ConditionScope cScope = (ConditionScope)method;
+			cScope.validateConditions();
+		}
+		if(!internalScopes.isEmpty())
+			for(Scope scope:internalScopes)
+				return validateScope(scope);
 		return true;
 	}
 }
