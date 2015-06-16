@@ -8,6 +8,8 @@ public class Scope {
 	private ArrayList<String> changedVars;
 	private ArrayList<Scope> internalScopes;
 	private ArrayList<String> calledMethods;
+	//private ArrayList<MethodScope> internalMethods;
+	//private ArrayList<ConditionScope> internalConditionScopes;
 	private String name;
 	
 	public Scope(String name){
@@ -36,7 +38,10 @@ public class Scope {
 		representation = representation + " Variables to change: ";
 		for(String var:changedVars)
 			representation = representation + var + " ";
-		return representation;
+		representation = representation + " Calling methods: ";
+		for(String mthd:calledMethods)
+			representation = representation + mthd + " ";
+		return representation + " " + this.getClass();
 	}
 	
 	public ArrayList<String> getCalledMethods(){
@@ -106,5 +111,18 @@ public class Scope {
 	
 	public void addScope(Scope scope) {
 		internalScopes.add(scope);
+	}
+	
+	/**
+	 * Returns the scope with the given name
+	 * @param methodName
+	 * @return the scope with the given name
+	 * @throws noSuchMethodException
+	 */
+	public MethodScope getInternalScope(String methodName) throws noSuchMethodException{
+		for(Scope sc:internalScopes)
+			if(sc.getName().equals(methodName))
+				return (MethodScope)sc;
+		throw new noSuchMethodException("Method " + methodName + " doesn't exist");
 	}
 }

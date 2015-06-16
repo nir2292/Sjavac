@@ -25,16 +25,17 @@ public class ScopeFactory {
 			p = Pattern.compile(methodHeader);
 			m = p.matcher(header);
 			m.matches();
-			Scope scope = new MethodScope(m.group(1));
+			MethodScope scope = new MethodScope(m.group(1));
 			String[] methodParameters = m.group(2).split(",");
 			for (String parameter: methodParameters) {
 				scope.addAllVars(Parser.handleVar(parameter.trim()));
+				scope.addToParameters(Parser.handleVar(parameter.trim()));
 			}
 			return scope;
 		} else if (Pattern.matches(ConditionalScopeHeader, header)) {
 			p = Pattern.compile(ConditionalScopeHeader);
 			m = p.matcher(header);
-			m.matches();			
+			m.matches();
 			String parametersLine = m.group(2);
 			String[] parameters = null;
 			parameters = parametersLine.split(conditionStatements);

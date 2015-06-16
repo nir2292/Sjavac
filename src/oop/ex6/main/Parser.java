@@ -86,6 +86,7 @@ public class Parser {
 				//TODO
 				continue;
 			} else if(Pattern.matches(methodDecleration + END_OF_CODE_LINE, currentLine)){
+				currentLine = currentLine.substring(0, currentLine.lastIndexOf(")")+1);
 				sc.addCalledMethod(currentLine);
 				currentLine = buffer.readLine();
 				continue;
