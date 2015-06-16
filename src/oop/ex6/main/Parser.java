@@ -15,7 +15,8 @@ public class Parser {
 	public static final String START_OF_FILE = "START";
 	final static String varChangeRegex = "(\\w+)\\s*=\\s*(\\w+)\\s*;";
 	final static String varValuesRegex = "\\s*(\\w+)\\s*(\\=\\s*(\\w+)\\s*)?";
-	final static String varDeclerationRegex = "\\s*([a-zA-Z]+)\\s+(" + varValuesRegex + ",)*(" + varValuesRegex + ")?\\s*";
+	final static String varModifierRegex = "\\s*(final)*\\s*";
+	final static String varDeclerationRegex = varModifierRegex + "\\s*([a-zA-Z]+)\\s+(" + varValuesRegex + ",)*(" + varValuesRegex + ")?\\s*";
 	final static String varLineRegex = varDeclerationRegex + END_OF_CODE_LINE;
 	final static String HEADER = "[\\w\\s]+\\([\\w\\s\\,]*\\)\\s*\\{";
 	final static String methodValuesRegex = "([a-zA-Z]+)\\s+([\\p{Punct}\\w]+)";
@@ -105,9 +106,9 @@ public class Parser {
 		Pattern p = Pattern.compile(varDeclerationRegex);
 		Matcher m = p.matcher(currentLine);
 		m.matches();
-		String varType = m.group(1);
+		String varModifier = m.group(1), varType = m.group(2);
 		Type var;
-		m.reset(currentLine.substring(m.start(1) + varType.length()));
+		m.reset(currentLine.substring(m.start(2) + varType.length()));
 		m.usePattern(Pattern.compile(varValuesRegex));
 		while (m.find()) {
 			try {
@@ -116,9 +117,9 @@ public class Parser {
 				throw new noSuchTypeException("illegal value :" + varType);
 			}
 			if (m.group(3) != null) {
-				vars.add(new Variable(var, m.group(1) , m.group(3), false));
+				vars.add(new Variable(var, m.group(1) , m.group(3), varModifier));
 			} else {
-				vars.add(new Variable(var, m.group(1), false));
+				vars.add(new Variable(var, m.group(1), varModifier));
 			}
 		}
 		return vars;	

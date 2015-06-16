@@ -43,11 +43,13 @@ public class Scope {
 	public void addVar(Variable var) throws illegalVariableDeclerationException{
 		try {
 			Variable sameVar = getVariable(var.getName());
+			throw new illegalVariableDeclerationException("Variable already declared");
 		} catch (noSuchVariable e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			knownVariables.add(var);
+			for (Scope scope : internalScopes){
+				scope.addVar(var);
+			}
 		}
-		
 	}
 
 	public void addAllVars(ArrayList<Variable> vars) throws illegalVariableDeclerationException{

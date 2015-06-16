@@ -2,12 +2,14 @@ package oop.ex6.main;
 
 public class Variable {
 	
+	final static String FINAL = "final";
+	
 	Type var;
 	String name;
 	String value;
 	final boolean finalFlag;
 	
-	public Variable(Type var, String name, String value, boolean finalFlag) throws illegalValueException{
+	public Variable(Type var, String name, String value, String finalFlag) throws illegalValueException{
 		if (name == null || value == null) {
 			throw new illegalValueException("Bad value for type " + var.toString());
 		}
@@ -18,21 +20,33 @@ public class Variable {
 		}
 		this.var = var;
 		this.name = name;
-		this.finalFlag = finalFlag;
+		if (finalFlag==null) {
+			this.finalFlag = false;
+		} else {
+			this.finalFlag = finalFlag.equals(FINAL);
+		}
 	}
 	
-	public Variable(Type var, String name, boolean finalFlag) throws illegalValueException {
+	public Variable(Type var, String name, String finalFlag) throws illegalValueException {
 		if (name == null) {
 			throw new illegalValueException("Bad value for type " + var.toString());
 		}
 		this.var = var;
 		this.name = name;
-		this.finalFlag = finalFlag;
+		if (finalFlag==null) {
+			this.finalFlag = false;
+		} else {
+			this.finalFlag = finalFlag.equals(FINAL);
+		}
 	}
 	
 	@Override
 	public String toString() {
-		return name + "(" + var + "," + value + ")";
+		String finalToType = "";
+		if (this.finalFlag) {
+			finalToType = FINAL + ",";
+		}
+		return name + "(" + finalToType + var + "," + value + ")";
 	}
 	public String getName() {
 		return this.name;
