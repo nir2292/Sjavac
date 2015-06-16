@@ -28,6 +28,7 @@ public class ConditionScope extends Scope {
 		super(name, vars);
 		this.conditions = conditions;
 	}
+	
 	@Override
 	public String toString() {
 		String representation = super.toString() + " Conditions: ";

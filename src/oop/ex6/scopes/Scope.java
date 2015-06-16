@@ -7,12 +7,14 @@ public class Scope {
 	private ArrayList<Variable> knownVariables;
 	private ArrayList<String> changedVars;
 	private ArrayList<Scope> internalScopes;
+	private ArrayList<String> calledMethods;
 	private String name;
 	
 	public Scope(String name){
 		this.knownVariables = new ArrayList<>();
 		this.changedVars = new ArrayList<>();
 		this.internalScopes = new ArrayList<>();
+		this.calledMethods = new ArrayList<>();
 		this.name = name;
 	}
 	
@@ -20,6 +22,7 @@ public class Scope {
 		this.knownVariables = new ArrayList<>();
 		this.changedVars = new ArrayList<>();
 		this.internalScopes = new ArrayList<>();
+		this.calledMethods = new ArrayList<>();
 		this.name = name;
 		addAllVars(vars);
 	}
@@ -34,6 +37,16 @@ public class Scope {
 		for(String var:changedVars)
 			representation = representation + var + " ";
 		return representation;
+	}
+	
+	public ArrayList<String> getCalledMethods(){
+		return this.calledMethods;
+	}
+	
+	public void addCalledMethod(String callingLine){
+		// Checking if contains because we don't need to check twice for the same call.
+		if(!calledMethods.contains(callingLine))
+			calledMethods.add(callingLine);
 	}
 	
 	public String getName() {

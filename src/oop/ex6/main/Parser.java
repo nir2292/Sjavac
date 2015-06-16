@@ -13,6 +13,7 @@ import oop.ex6.scopes.*;
 public class Parser {
 	static final String END_OF_CODE_LINE = ";";
 	public static final String START_OF_FILE = "START";
+	final static String returnRegex = "return;";
 	final static String varChangeRegex = "(\\w+)\\s*=\\s*(\\w+)\\s*;";
 	final static String varValuesRegex = "\\s*(\\w+)\\s*(\\=\\s*(\\w+)\\s*)?";
 	final static String varModifierRegex = "\\s*(final)*\\s*";
@@ -81,7 +82,9 @@ public class Parser {
 				continue;
 			} else if(Pattern.matches(endScopeRegex, currentLine)){
 				return sc;
-			} else {
+			} else if(Pattern.matches(returnRegex, currentLine)){
+				//TO-DO
+			} else{
 				throw new illegalLineException("Line does not match format");
 			}
 		}
