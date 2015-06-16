@@ -12,21 +12,25 @@ import oop.ex6.scopes.*;
 
 public class Parser {
 	static final String END_OF_CODE_LINE = ";";
+	final static String openScopeRegex = "\\s*\\{";
+	final static String endScopeRegex = "\\s*\\}";
+	static final String COMMENT_PREFIX = "//";
+	static final String EMPTY_LINE = "[\\s]*";
 	public static final String START_OF_FILE = "START";
-	final static String returnRegex = "return;";
 	final static String varChangeRegex = "(\\w+)\\s*=\\s*(\\w+)\\s*;";
 	final static String varValuesRegex = "\\s*(\\w+)\\s*(\\=\\s*(\\w+)\\s*)?";
 	final static String varModifierRegex = "\\s*(final)*\\s*";
 	final static String varDeclerationRegex = varModifierRegex + "\\s*([a-zA-Z]+)\\s+(" + varValuesRegex + ",)*(" + varValuesRegex + ")?\\s*";
 	final static String varLineRegex = varDeclerationRegex + END_OF_CODE_LINE;
 	final static String HEADER = "[\\w\\s]+\\([\\w\\s\\,]*\\)\\s*\\{";
-	final static String methodValuesRegex = "([a-zA-Z]+)\\s+([\\p{Punct}\\w]+)";
-	final static String methodHeader = "void\\s+([\\w]+)\\s*\\(\\s*(("+ methodValuesRegex +"\\s*,\\s*)*\\s*(" + methodValuesRegex + ")?)\\s*\\)\\s*\\{";
+	final static String methodDecleration = "([\\w]+)\\s*\\(\\s*((([\\w]+)\\s*\\,\\s*)*([\\w]+)?)*\\s*\\)\\s*";
+//	final static String methodValuesRegex = "([a-zA-Z]+)\\s+([\\p{Punct}\\w]+)";
+//	final static String methodModifier = "void\\s+";
+//	final static String methodDecleration = "([\\w]+)\\s*\\(\\s*(("+ methodValuesRegex +"\\s*,\\s*)*\\s*(" + methodValuesRegex + ")?)\\s*\\)";
+//	final static String methodHeader = methodModifier + methodDecleration + openScopeRegex;
+//	final static String methodHeader = "void\\s+([\\w]+)\\s*\\(\\s*(("+ methodValuesRegex +"\\s*,\\s*)*\\s*(" + methodValuesRegex + ")?)\\s*\\)\\s*\\{";
 	final static String ConditionalScopeHeader = "(while|if)\\s*\\(\\s*([\\w]+)\\s*((\\|\\||\\&\\&)\\s*([\\w]+)\\s*)*\\s*\\)\\s*\\{";
 	final static String returnStatement = "\\s*(return)\\s*" + END_OF_CODE_LINE;
-	final static String endScopeRegex = "\\}";
-	static final String COMMENT_PREFIX = "//";
-	static final String EMPTY_LINE = "[\\s]*";
 	
 	static final String LEGAL_CHARS = "\\!#\\$\\%\\&\\(\\)\\*\\+\\-\\.\\/\\:\\;\\<\\=\\>\\?@\\[\\]\\^\\_\\`{\\|}\\~";
 	BufferedReader buffer;
@@ -79,11 +83,14 @@ public class Parser {
 				continue;
 			} else if(Pattern.matches(returnStatement, currentLine)){
 				currentLine = buffer.readLine();
+				//TODO
+				continue;
+			} else if(Pattern.matches(methodDecleration + END_OF_CODE_LINE, currentLine)){
+				sc.addCalledMethod(currentLine);
+				currentLine = buffer.readLine();
 				continue;
 			} else if(Pattern.matches(endScopeRegex, currentLine)){
 				return sc;
-			} else if(Pattern.matches(returnRegex, currentLine)){
-				//TO-DO
 			} else{
 				throw new illegalLineException("Line does not match format");
 			}
