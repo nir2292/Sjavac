@@ -13,7 +13,7 @@ public class ScopeFactory {
 	final static String methodHeader = "void\\s+([\\w]+)\\s*\\(\\s*(("+ methodValuesRegex +"\\s*,\\s*)*\\s*(" + methodValuesRegex + ")?)\\s*\\)\\s*\\{";
 	final static String ConditionalScopeHeader = "(while|if)\\s*\\((\\s*([\\w]+)\\s*((\\|\\||\\&\\&)\\s*([\\w]+)\\s*)*\\s*)\\)\\s*\\{";
 	final static String END_OF_CODE_LINE = ";";
-	final static String conditionStatements = "\\|\\||\\&\\&";
+	final static String conditionStatements = "\\s*(\\|\\||\\s*\\&\\&)\\s*";
 	
 	
 	public static Scope getScope(String header) throws badFileFormatException {

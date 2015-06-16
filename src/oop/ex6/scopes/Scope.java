@@ -16,7 +16,7 @@ public class Scope {
 		this.name = name;
 	}
 	
-	public Scope(String name, ArrayList<Variable> vars){
+	public Scope(String name, ArrayList<Variable> vars) throws illegalVariableDeclerationException{
 		this.knownVariables = new ArrayList<>();
 		this.changedVars = new ArrayList<>();
 		this.internalScopes = new ArrayList<>();
@@ -40,14 +40,17 @@ public class Scope {
 		return this.name;
 	}
 	
-	public void addVar(Variable var){
-		knownVariables.add(var);
-		for (Scope internalScope : internalScopes) {
-			internalScope.addVar(var);
+	public void addVar(Variable var) throws illegalVariableDeclerationException{
+		try {
+			Variable sameVar = getVariable(var.getName());
+		} catch (noSuchVariable e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
+		
 	}
-	
-	public void addAllVars(ArrayList<Variable> vars){
+
+	public void addAllVars(ArrayList<Variable> vars) throws illegalVariableDeclerationException{
 		for(Variable var:vars)
 			addVar(var);
 	}
@@ -69,7 +72,7 @@ public class Scope {
 		return this.internalScopes;
 	}
 
-	public boolean knowsVariable(Variable var){
+	public boolean contains(Variable var){
 		if(knownVariables.contains(var))
 			return true;
 		return false;

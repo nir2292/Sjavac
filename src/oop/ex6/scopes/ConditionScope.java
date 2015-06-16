@@ -2,12 +2,14 @@ package oop.ex6.scopes;
 
 import java.util.ArrayList;
 import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import oop.ex6.main.Type;
 import oop.ex6.main.Variable;
 import oop.ex6.main.noSuchVariable;
 
 public class ConditionScope extends Scope {
+	private static final String ACCEPTED_TYPES = "int|boolean|double";
 	private Matcher conditionBooleanMatcher;
 	private String[] conditions;
 	private Matcher conditionValueMatcher;
@@ -22,7 +24,7 @@ public class ConditionScope extends Scope {
 	}
 	
 
-	public ConditionScope(String name, String[] conditions, ArrayList<Variable> vars) {
+	public ConditionScope(String name, String[] conditions, ArrayList<Variable> vars) throws illegalVariableDeclerationException {
 		super(name, vars);
 		this.conditions = conditions;
 	}
@@ -39,22 +41,18 @@ public class ConditionScope extends Scope {
 	}
 	
 	public boolean validateConditions() throws badConditionFormat, noSuchVariable{
-		addConditions();
+		checkConditions();
 		return true;
 	}
 
-	private void addConditions() throws badConditionFormat, noSuchVariable {
-		ArrayList<String> splitConditions = new ArrayList<>();
-		for(String condition:conditions)
-			System.out.println(condition);
-		for(String condition:splitConditions){
+	private void checkConditions() throws badConditionFormat, noSuchVariable {
+		for(String condition:conditions){
 			conditionBooleanMatcher = Type.BOOLEAN.getMatcher(condition);
 			if(conditionBooleanMatcher.matches())
 				continue;
 			else{
-				System.out.println("Condition is: " + condition);
-				conditionValueMatcher = Type.BOOLEAN.getMatcher(getVariable(condition).getValue());
-				if(conditionValueMatcher.matches())
+				String conditionType = getVariable(condition).getType().toLowerCase();
+				if(Pattern.matches(ACCEPTED_TYPES, conditionType))
 					continue;
 			}
 			throw new badConditionFormat("Condition has to be of type boolean.");

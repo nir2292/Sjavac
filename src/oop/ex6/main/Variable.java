@@ -30,6 +30,7 @@ public class Variable {
 		this.finalFlag = finalFlag;
 	}
 	
+	@Override
 	public String toString() {
 		return name + "(" + var + "," + value + ")";
 	}
@@ -39,6 +40,10 @@ public class Variable {
 	
 	public String getValue() {
 		return this.value;
+	}
+	
+	public String getType(){
+		return var.name();
 	}
 	
 	/**
