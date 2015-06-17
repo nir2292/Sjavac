@@ -31,7 +31,7 @@ public class Parser {
 //	final static String methodHeader = "void\\s+([\\w]+)\\s*\\(\\s*(("+ methodValuesRegex +"\\s*,\\s*)*\\s*(" + methodValuesRegex + ")?)\\s*\\)\\s*\\{";
 	final static String ConditionalScopeHeader = "(while|if)\\s*\\(\\s*([\\w]+)\\s*((\\|\\||\\&\\&)\\s*([\\w]+)\\s*)*\\s*\\)\\s*\\{";
 	final static String returnStatement = "\\s*(return)\\s*" + END_OF_CODE_LINE;
-	
+
 	static final String LEGAL_CHARS = "\\!#\\$\\%\\&\\(\\)\\*\\+\\-\\.\\/\\:\\;\\<\\=\\>\\?@\\[\\]\\^\\_\\`{\\|}\\~";
 	BufferedReader buffer;
 	private ArrayList<Variable> globalVariables;
@@ -51,6 +51,7 @@ public class Parser {
 	
 	public void parseMain() throws IOException, badFileFormatException {
 		mainScope = parseScope(START_OF_FILE);
+		
 	}
 	
 //	private void initializeVars(ArrayList<Scope> methods){
@@ -175,7 +176,7 @@ public class Parser {
 		}
 		return vars;	
 	}
-
+	
 	private void validateMethods() {
 		return;
 	}

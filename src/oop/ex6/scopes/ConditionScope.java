@@ -11,22 +11,25 @@ import oop.ex6.main.noSuchVariable;
 public class ConditionScope extends Scope {
 	private static final String ACCEPTED_TYPES = "int|boolean|double";
 	private Matcher conditionBooleanMatcher;
-	private String[] conditions;
+	private ArrayList<String> conditions;
 	private Matcher conditionValueMatcher;
 	
 	public ConditionScope(String name) {
 		super(name);
+		this.conditions = new ArrayList<>();
 	}
 	
 	public ConditionScope(String name, String[] conditions) {
 		super(name);
-		this.conditions = conditions;
+		this.conditions = new ArrayList<>();
+		addContitions(conditions);
 	}
 	
 
 	public ConditionScope(String name, String[] conditions, ArrayList<Variable> vars) throws illegalVariableDeclerationException {
 		super(name, vars);
-		this.conditions = conditions;
+		this.conditions = new ArrayList<>();
+		addContitions(conditions);
 	}
 	
 	@Override
@@ -38,7 +41,11 @@ public class ConditionScope extends Scope {
 		return representation;
 	}
 	public void addContitions(String[] conditions) {
-		this.conditions = conditions;
+		if (conditions != null) {
+			for (String condition : conditions){
+				this.conditions.add(condition.trim());
+			}
+		}
 	}
 	
 	public boolean validateConditions() throws badConditionFormat, noSuchVariable{
