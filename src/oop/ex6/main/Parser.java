@@ -14,7 +14,7 @@ public class Parser {
 	static final String END_OF_CODE_LINE = ";";
 	final static String openScopeRegex = "\\s*\\{";
 	final static String endScopeRegex = "\\s*\\}";
-	static final String COMMENT_PREFIX = "//";
+//	static final String COMMENT_PREFIX = "//";
 	static final String EMPTY_LINE = "[\\s]*";
 	public static final String START_OF_FILE = "START";
 	final static String varChangeRegex = "(\\w+)\\s*=\\s*([\\w.*]+)\\s*;";
