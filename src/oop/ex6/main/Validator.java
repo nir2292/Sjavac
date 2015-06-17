@@ -8,7 +8,7 @@ import oop.ex6.scopes.*;
 
 public class Validator {
 	private final String valueAssignmentRegex = "\\w+\\=\\w+\\;";
-	private final String varRegex = "\\s*(['\"]*\\s*\\w+\\s*['\"]*)\\s*";
+	private final String varRegex = "\\s*(['\"]*\\s*\\w+\\.*\\w*\\s*['\"]*)\\s*";
 	private final String methodDeclerationRegex = "([\\w]+)\\s*\\(\\s*(['\"]*\\s*(\\w+\\.*\\w*)\\s*['\"]*\\s*,\\s*)*\\s*['\"]*\\s*(\\w+\\.*\\w*)?\\s*['\"]*\\s*\\)\\s*";
 	private Scope mainScope;
 	private ArrayList<MethodScope> methods;
