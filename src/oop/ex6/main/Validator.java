@@ -8,8 +8,8 @@ import oop.ex6.scopes.*;
 
 public class Validator {
 	private final String valueAssignmentRegex = "\\w+\\=\\w+\\;";
-	private final String varRegex = "\\s*(\\w+)\\s*";
-	private final String methodDeclerationRegex = "([\\w]+)\\s*\\(\\s*((([\\w]+)\\s*\\,\\s*)*([\\w]+)?)*\\s*\\)\\s*";
+	private final String varRegex = "\\s*(['\"]*\\s*\\w+\\s*['\"]*)\\s*";
+	private final String methodDeclerationRegex = "([\\w]+)\\s*\\(\\s*(['\"]*\\s*(\\w+\\.*\\w*)\\s*['\"]*\\s*,\\s*)*\\s*['\"]*\\s*(\\w+\\.*\\w*)?\\s*['\"]*\\s*\\)\\s*";
 	private Scope mainScope;
 	private ArrayList<MethodScope> methods;
 	
@@ -58,8 +58,15 @@ public class Validator {
 			while(m.find()){
 				Variable suitedVar = method.getVariableByName(m.group(1));
 				Variable methodParam = methodScope.getParameter(parameterIndex);
-				if(!suitedVar.getType().equals(methodParam.getType()))
+				if(suitedVar != null && !suitedVar.getType().equals(methodParam.getType())){
 					throw new badMethodCallException("Parameter " + suitedVar.getName() + " for method " + methodName + " is invalid.");
+				} else {
+					String methodParamType = methodParam.getType();
+					Matcher methodParamTypeMatcher = Type.valueOf(methodParamType).getMatcher(m.group(1));
+					if(!methodParamTypeMatcher.matches()){
+						throw new badMethodCallException("Parameter " + m.group(1) + " for method " + methodName + " is invalid.");
+					}
+				}
 				parameterIndex++;
 			}
 		}

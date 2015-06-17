@@ -20,15 +20,16 @@ public class Parser {
 	final static String varChangeRegex = "(\\w+)\\s*=\\s*([\\w.*]+)\\s*;";
 	final static String varValuesRegex = "\\s*(\\w+)\\s*(\\=\\s*([\\w.'\"*]+)\\s*)?";
 	final static String varModifierRegex = "\\s*(final)*\\s*";
-	final static String varDeclerationRegex = varModifierRegex + "\\s*(S?[a-z]+)\\s+(" + varValuesRegex + ",)*(" + varValuesRegex + ")?\\s*";
+	final static String varDeclerationRegex = varModifierRegex + "\\s*([a-zA-Z]+)\\s+(" + varValuesRegex + ",)*(" + varValuesRegex + ")?\\s*";
 	final static String varLineRegex = varDeclerationRegex + END_OF_CODE_LINE;
 	final static String HEADER = "[\\w\\s]+\\([\\w\\s\\,]*\\)\\s*\\{";
+//	final static String methodDecleration = "([\\w]+)\\s*\\(\\s*((([\\w]+)\\s*\\,\\s*)*([\\w]+)?)*\\s*\\)\\s*";
 	final static String methodModifier = "void\\s+";
 	final static String methodName = "([a-zA-Z]\\w*)";
 	final static String methodValuesRegex = "((\\w+)\\s+(\\w+))";
 	final static String methodDecleration = methodName  + "\\s*\\(\\s*("+ methodValuesRegex +"\\s*,\\s*)*\\s*" + methodValuesRegex + "?\\s*\\)\\s*";
 	final static String methodHeader = methodModifier + methodDecleration + openScopeRegex;
-	final static String callMethod = methodName  + "\\s*\\(\\s*(['\"]*\\s*(\\w+)\\s*['\"]*\\s*,\\s*)*\\s*['\"]*\\s*(\\w+)?\\s*['\"]*\\s*\\)\\s*" + END_OF_CODE_LINE;
+	final static String callMethod = methodName  + "\\s*\\(\\s*(['\"]*\\s*(\\w+\\.*\\w*)\\s*['\"]*\\s*,\\s*)*\\s*['\"]*\\s*(\\w+\\.*\\w*)?\\s*['\"]*\\s*\\)\\s*" + END_OF_CODE_LINE;
 	final static String ConditionalScopeHeader = "(while|if)\\s*\\(\\s*([\\w]+)\\s*((\\|\\||\\&\\&)\\s*([\\w]+)\\s*)*\\s*\\)\\s*\\{";
 	final static String returnStatement = "\\s*(return)\\s*" + END_OF_CODE_LINE;
 
