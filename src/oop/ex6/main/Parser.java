@@ -27,8 +27,9 @@ public class Parser {
 	final static String methodModifier = "void\\s+";
 	final static String methodName = "([a-zA-Z]\\w*)";
 	final static String methodValuesRegex = "((\\w+)\\s+(\\w+))";
-	final static String methodDecleration = methodName  + "\\s*\\(\\s*("+ methodValuesRegex +"\\s*,\\s*)*\\s*" + methodValuesRegex + "?\\s*\\)";
+	final static String methodDecleration = methodName  + "\\s*\\(\\s*("+ methodValuesRegex +"\\s*,\\s*)*\\s*" + methodValuesRegex + "?\\s*\\)\\s*";
 	final static String methodHeader = methodModifier + methodDecleration + openScopeRegex;
+	final static String callMethod = methodName  + "\\s*\\(\\s*("+ "(\\w+)" +"\\s*,\\s*)*\\s*" + "(\\w+)" + "?\\s*\\)\\s*" + END_OF_CODE_LINE;
 	final static String ConditionalScopeHeader = "(while|if)\\s*\\(\\s*([\\w]+)\\s*((\\|\\||\\&\\&)\\s*([\\w]+)\\s*)*\\s*\\)\\s*\\{";
 	final static String returnStatement = "\\s*(return)\\s*" + END_OF_CODE_LINE;
 
@@ -117,7 +118,7 @@ public class Parser {
 					//TODO
 					continue;
 				}
-				if(Pattern.matches(methodDecleration + END_OF_CODE_LINE, currentLine)){
+				if(Pattern.matches(callMethod, currentLine)){
 					currentLine = currentLine.substring(0, currentLine.lastIndexOf(")")+1);
 					sc.addCalledMethod(currentLine);
 					currentLine = buffer.readLine();
