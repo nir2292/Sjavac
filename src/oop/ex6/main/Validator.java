@@ -17,24 +17,26 @@ public class Validator {
 		this.mainScope = scope;
 		this.methods = mainScope.getInternalMethods();
 	}
-	
-	public boolean isValid() throws badFileFormatException{
-		addGlobalVarsToMethods(mainScope.getKnownVariables());
-		return ValidateScopes();// && ValidateConditions();
-	}
 
-	private void addGlobalVarsToMethods(ArrayList<Variable> knownVariables) {
-		for(Scope method:methods)
-			try {
-				method.addAllVars(knownVariables);
-			} catch (illegalVariableDeclerationException e) {
-				continue;
+	private boolean ValidateMethodAssignments(Scope method) throws badFileFormatException {
+		ArrayList<String> changedVariables = method.getChangedVars();
+		for(String var:changedVariables){
+			String varInfo[] = var.split("\\, ");
+			String varName = varInfo[0];
+			String varNewValue = varInfo[1];
+			Variable varOfValue = method.getVariableByName(varNewValue);
+			if(varOfValue != null){
+				method.setVariableValue(varName, varOfValue.getValue());
 			}
+			else
+				method.setVariableValue(varName, varNewValue);
+		}
+		return true;
 	}
 
-	private boolean ValidateScopes() throws badFileFormatException{
+	public boolean isValid() throws badFileFormatException{
 		for(Scope method:methods){
-			if(!validateScope(method))
+			if(!(validateScope(method) && ValidateMethodAssignments(method)))
 				return false;
 		}
 		return true;
@@ -44,10 +46,6 @@ public class Validator {
 		ArrayList<String> changedVariables = method.getChangedVars();
 		ArrayList<ConditionScope> internalConditionScope = method.getInternalConditionScopes();
 		ArrayList<String> calledMethods = method.getCalledMethods();
-		for(String var:changedVariables){
-			String varInfo[] = var.split("\\, ");
-			method.setVariableValue(varInfo[0], varInfo[1]);
-		}
 		for(String mthd:calledMethods){
 			Pattern p = Pattern.compile(methodDeclerationRegex);
 			Matcher m = p.matcher(mthd);

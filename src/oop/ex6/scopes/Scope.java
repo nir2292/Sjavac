@@ -142,7 +142,7 @@ public class Scope {
 			}
 		}
 		catch(badFileFormatException e){
-			throw new badFileFormatException("Bad value assignment for var " + varName + " or variable is final");
+			throw new badFileFormatException("Bad value assignment for var " + varName);
 		}
 	}
 	
@@ -173,19 +173,16 @@ public class Scope {
 	 * @throws noSuchVariable if either aren't found
 	 */
 	public Variable getVariableByName(String varName) {
-		Variable localVar = null;
-		Variable globalVar = null;
 		for(Variable var:knownVariables){
 			if(var.getName().equals(varName)){
-				if(var.isGlobal())
-					globalVar = var;
-				else
-					localVar = var;
+					return var;
 			}
 		}
-		if(localVar != null)
-			return localVar;
-		else
-			return globalVar;
+		for(Variable var:Scope.globalVariables){
+			if(var.getName().equals(varName)){
+				return var;
+			}
+		}
+		return null;
 	}
 }

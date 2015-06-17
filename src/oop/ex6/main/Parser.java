@@ -69,7 +69,6 @@ public class Parser {
 			if (checkToIgnore(currentLine)) {
 				currentLine = buffer.readLine();
 				continue;
-
 			}
 			if (Pattern.matches(HEADER, currentLine)) {
 				Scope newScope = parseScope(currentLine);
@@ -87,9 +86,9 @@ public class Parser {
 				//calls handleVar method to check for variables in this line.
 				ArrayList<Variable> varsToAdd;
 				if(sc.getName().equals(START_OF_FILE)){ //add as globals
-					varsToAdd = handleVar(currentLine.substring(0, currentLine.lastIndexOf(END_OF_CODE_LINE)), true);
+					varsToAdd = handleVar(currentLine.substring(0, currentLine.lastIndexOf(END_OF_CODE_LINE)), true, sc);
 				} else {//don't add as globals
-					varsToAdd = handleVar(currentLine.substring(0, currentLine.lastIndexOf(END_OF_CODE_LINE)), false);
+					varsToAdd = handleVar(currentLine.substring(0, currentLine.lastIndexOf(END_OF_CODE_LINE)), false, sc);
 				}
 				sc.addAllVars(varsToAdd);
 				currentLine = buffer.readLine();
@@ -152,7 +151,7 @@ public class Parser {
 	 * Receives a line declaring a variable.
 	 * for example: int a = 3 \ int a \ int a,b,c=6
 	 */
-	public static ArrayList<Variable> handleVar(String currentLine, boolean globalFlag) throws badFileFormatException {
+	public static ArrayList<Variable> handleVar(String currentLine, boolean globalFlag, Scope sc) throws badFileFormatException {
 		ArrayList<Variable> vars = new ArrayList<>();
 		if(currentLine.equals(""))
 			return vars;
@@ -170,7 +169,11 @@ public class Parser {
 				throw new noSuchTypeException("illegal value :" + varType);
 			}
 			if (m.group(3) != null) {
-				vars.add(new Variable(var, m.group(1) , m.group(3), varModifier, globalFlag));
+				Variable varOfValue = sc.getVariableByName(m.group(3));
+				if(varOfValue != null)
+					vars.add(new Variable(var, m.group(1), varOfValue.getValue(), varModifier, globalFlag));
+				else
+					vars.add(new Variable(var, m.group(1) , m.group(3), varModifier, globalFlag));
 			} else {
 				vars.add(new Variable(var, m.group(1), varModifier, globalFlag));
 			}
@@ -191,5 +194,4 @@ public class Parser {
 		}
 		return false;
 	}
-	
 }

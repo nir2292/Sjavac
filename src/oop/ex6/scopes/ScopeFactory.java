@@ -28,8 +28,8 @@ public class ScopeFactory {
 			MethodScope scope = new MethodScope(m.group(1));
 			String[] methodParameters = m.group(2).split(",");
 			for (String parameter: methodParameters) {
-				scope.addAllVars(Parser.handleVar(parameter.trim(), false));
-				scope.addToParameters(Parser.handleVar(parameter.trim(), false));
+				scope.addAllVars(Parser.handleVar(parameter.trim(), false, scope));
+				scope.addToParameters(Parser.handleVar(parameter.trim(), false, scope));
 			}
 			return scope;
 		} else if (Pattern.matches(ConditionalScopeHeader, header)) {
