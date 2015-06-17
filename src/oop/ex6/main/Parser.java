@@ -67,38 +67,41 @@ public class Parser {
 			if (checkToIgnore(currentLine)) {
 				currentLine = buffer.readLine();
 				continue;
-			} else if (Pattern.matches(HEADER, currentLine) || Pattern.matches(ConditionalScopeHeader, currentLine)) {
+			} if (Pattern.matches(HEADER, currentLine) || Pattern.matches(ConditionalScopeHeader, currentLine)) {
 				Scope newScope = parseScope(currentLine);
 				newScope.addAllVars(sc.getKnownVariables());
 				sc.addScope(newScope);
 				currentLine = buffer.readLine();
 				continue;
-			} else if (Pattern.matches(varLineRegex, currentLine)) {
+			}
+			if (Pattern.matches(varLineRegex, currentLine)) {
 				//calls handleVar method to check for variables in this line.
 				sc.addAllVars(handleVar(currentLine.substring(0, currentLine.lastIndexOf(END_OF_CODE_LINE))));
 				currentLine = buffer.readLine();
 				continue;
-			} else if(Pattern.matches(varChangeRegex, currentLine)){
-				sc.addAssignmentVar(handleAssignmentVar(currentLine));
-				currentLine = buffer.readLine();
-				continue;
-			} else if(Pattern.matches(returnStatement, currentLine)){
-				currentLine = buffer.readLine();
-				//TODO
-				continue;
-			} else if(Pattern.matches(methodDecleration + END_OF_CODE_LINE, currentLine)){
-				currentLine = currentLine.substring(0, currentLine.lastIndexOf(")")+1);
-				sc.addCalledMethod(currentLine);
-				currentLine = buffer.readLine();
-				continue;
-			} else if(Pattern.matches(endScopeRegex, currentLine)){
-				if (sc.getName().equals(START_OF_FILE)) {
-					throw new illegalLineException("Line does not match format");
-				}
-				return sc;
-			} else{
-				throw new illegalLineException("Line does not match format");
 			}
+			if (!sc.getName().equals(START_OF_FILE)) {
+				if(Pattern.matches(varChangeRegex, currentLine)){
+					sc.addAssignmentVar(handleAssignmentVar(currentLine));
+					currentLine = buffer.readLine();
+					continue;
+				}
+				if(Pattern.matches(returnStatement, currentLine)){
+					currentLine = buffer.readLine();
+					//TODO
+					continue;
+				}
+				if(Pattern.matches(methodDecleration + END_OF_CODE_LINE, currentLine)){
+					currentLine = currentLine.substring(0, currentLine.lastIndexOf(")")+1);
+					sc.addCalledMethod(currentLine);
+					currentLine = buffer.readLine();
+					continue;
+				}
+				if(Pattern.matches(endScopeRegex, currentLine)){
+					return sc;
+				}
+			}
+				throw new illegalLineException("Line does not match format");
 		}
 		if (sc.getName() == START_OF_FILE) {
 //			currentLine = buffer.readLine();
