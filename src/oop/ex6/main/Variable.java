@@ -7,9 +7,10 @@ public class Variable {
 	Type var;
 	String name;
 	String value;
+	final boolean globaFlag;
 	final boolean finalFlag;
 	
-	public Variable(Type var, String name, String value, String finalFlag) throws illegalValueException{
+	public Variable(Type var, String name, String value, String finalFlag, boolean globalFlag) throws illegalValueException{
 		if (name == null || value == null) {
 			throw new illegalValueException("Bad value for type " + var.toString());
 		}
@@ -20,6 +21,7 @@ public class Variable {
 		}
 		this.var = var;
 		this.name = name;
+		this.globaFlag = globalFlag;
 		if (finalFlag==null) {
 			this.finalFlag = false;
 		} else {
@@ -27,12 +29,13 @@ public class Variable {
 		}
 	}
 	
-	public Variable(Type var, String name, String finalFlag) throws illegalValueException {
+	public Variable(Type var, String name, String finalFlag, boolean globalFlag) throws illegalValueException {
 		if (name == null) {
 			throw new illegalValueException("Bad value for type " + var.toString());
 		}
 		this.var = var;
 		this.name = name;
+		this.globaFlag = globalFlag;
 		if (finalFlag==null) {
 			this.finalFlag = false;
 		} else {
@@ -75,5 +78,9 @@ public class Variable {
 		} else {
 			throw new illegalAssignmentException("Cannot set value for final variable.");
 		}
+	}
+
+	public boolean isGlobal() {
+		return this.globaFlag;
 	}
 }

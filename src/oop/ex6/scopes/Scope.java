@@ -4,18 +4,19 @@ import java.util.ArrayList;
 import oop.ex6.main.*;
 
 public class Scope {
+	static public ArrayList<Variable> globalVariables = new ArrayList<>();
 	private ArrayList<Variable> knownVariables;
 	private ArrayList<String> changedVars;
-	private ArrayList<Scope> internalScopes;
 	private ArrayList<String> calledMethods;
-	//private ArrayList<MethodScope> internalMethods;
-	//private ArrayList<ConditionScope> internalConditionScopes;
+	private ArrayList<MethodScope> internalMethods;
+	private ArrayList<ConditionScope> internalConditionScopes;
 	private String name;
 	
 	public Scope(String name){
 		this.knownVariables = new ArrayList<>();
 		this.changedVars = new ArrayList<>();
-		this.internalScopes = new ArrayList<>();
+		this.internalMethods = new ArrayList<>();
+		this.internalConditionScopes = new ArrayList<>();
 		this.calledMethods = new ArrayList<>();
 		this.name = name;
 	}
@@ -23,7 +24,8 @@ public class Scope {
 	public Scope(String name, ArrayList<Variable> vars) throws illegalVariableDeclerationException{
 		this.knownVariables = new ArrayList<>();
 		this.changedVars = new ArrayList<>();
-		this.internalScopes = new ArrayList<>();
+		this.internalMethods = new ArrayList<>();
+		this.internalConditionScopes = new ArrayList<>();
 		this.calledMethods = new ArrayList<>();
 		this.name = name;
 		addAllVars(vars);
@@ -59,15 +61,25 @@ public class Scope {
 	}
 	
 	public void addVar(Variable var) throws illegalVariableDeclerationException{
-		try {
-			Variable sameVar = getVariable(var.getName());
-			throw new illegalVariableDeclerationException("Variable already declared");
-		} catch (noSuchVariable e) {
-			knownVariables.add(var);
-			for (Scope scope : internalScopes){
-				scope.addVar(var);
-			}
+		if(var.isGlobal()){
+			if(!globalVariables.contains(var))
+				globalVariables.add(var);
+			else
+				throw new illegalVariableDeclerationException("Variable " + var.getName() + " already declared");
 		}
+		else
+			try {
+				Variable sameVar = getVariable(var);
+				throw new illegalVariableDeclerationException("Variable " + var.getName() + " already declared");
+			} catch (noSuchVariable e) {
+				knownVariables.add(var);
+				for (MethodScope scope : internalMethods){
+					scope.addVar(var);
+				}
+				for (ConditionScope scope : internalConditionScopes){
+					scope.addVar(var);
+				}
+			}
 	}
 
 	public void addAllVars(ArrayList<Variable> vars) throws illegalVariableDeclerationException{
@@ -88,29 +100,58 @@ public class Scope {
 		return changedVars;
 	}
 	
-	public ArrayList<Scope> getInternalScopes(){
-		return this.internalScopes;
-	}
-
-	public boolean contains(Variable var){
-		if(knownVariables.contains(var))
-			return true;
-		return false;
+	public ArrayList<MethodScope> getInternalMethods(){
+		return this.internalMethods;
 	}
 	
-	public Variable getVariable(String varName) throws noSuchVariable{
+	public ArrayList<ConditionScope> getInternalConditionScopes(){
+		return this.internalConditionScopes;
+	}
+	
+	/**
+	 * Returns the variable wanted
+	 * @param var the variable
+	 * @return True iff the given var's and the found var's name AND type match.
+	 * @throws noSuchVariable
+	 */
+	public Variable getVariable(Variable variable) throws noSuchVariable{
+		Variable foundVar;
+		String variableName = variable.getName();
+		String variableType = variable.getType();
 		for(Variable var:knownVariables)
-			if(var.getName().equals(varName))
+			if(var.getName().equals(variableName)){
 				return var;
-		throw new noSuchVariable("Unknown variable " + varName);
+			}
+		for(Variable var:globalVariables)
+			if(var.getName().equals(variableName) && var.getType().equals(variableName))
+				return var;
+		throw new noSuchVariable("Unknown variable " + variableName);
 	}
 	
 	public void setVariableValue(String varName, String value) throws badFileFormatException{
-		getVariable(varName).setValue(value);
+		try{
+			for(Variable var:knownVariables){
+				if(var.getName().equals(varName)){
+					var.setValue(value);
+				}
+			}
+			for(Variable var:Scope.globalVariables){
+				if(var.getName().equals(varName)){
+					var.setValue(value);
+				}
+			}
+		}
+		catch(badFileFormatException e){
+			throw new badFileFormatException("Bad value assignment for var " + varName + " or variable is final");
+		}
 	}
 	
-	public void addScope(Scope scope) {
-		internalScopes.add(scope);
+	public void addMethodScope(MethodScope scope) {
+		internalMethods.add(scope);
+	}
+	
+	public void addConditionScope(ConditionScope scope){
+		internalConditionScopes.add(scope);
 	}
 	
 	/**
@@ -119,10 +160,32 @@ public class Scope {
 	 * @return the scope with the given name
 	 * @throws noSuchMethodException
 	 */
-	public MethodScope getInternalScope(String methodName) throws noSuchMethodException{
-		for(Scope sc:internalScopes)
+	public MethodScope getInternalMethod(String methodName) throws noSuchMethodException{
+		for(Scope sc:internalMethods)
 			if(sc.getName().equals(methodName))
 				return (MethodScope)sc;
 		throw new noSuchMethodException("Method " + methodName + " doesn't exist");
+	}
+
+	/**
+	 * @param group
+	 * @return the local variable with the name varName, if found, if not, the global variable with varName
+	 * @throws noSuchVariable if either aren't found
+	 */
+	public Variable getVariableByName(String varName) {
+		Variable localVar = null;
+		Variable globalVar = null;
+		for(Variable var:knownVariables){
+			if(var.getName().equals(varName)){
+				if(var.isGlobal())
+					globalVar = var;
+				else
+					localVar = var;
+			}
+		}
+		if(localVar != null)
+			return localVar;
+		else
+			return globalVar;
 	}
 }

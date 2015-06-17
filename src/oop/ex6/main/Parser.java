@@ -17,8 +17,8 @@ public class Parser {
 	static final String COMMENT_PREFIX = "//";
 	static final String EMPTY_LINE = "[\\s]*";
 	public static final String START_OF_FILE = "START";
-	final static String varChangeRegex = "(\\w+)\\s*=\\s*(\\w+)\\s*;";
-	final static String varValuesRegex = "\\s*(\\w+)\\s*(\\=\\s*(\\w+)\\s*)?";
+	final static String varChangeRegex = "(\\w+)\\s*=\\s*([\\w.*]+)\\s*;";
+	final static String varValuesRegex = "\\s*(\\w+)\\s*(\\=\\s*([\\w.\"*]+)\\s*)?";
 	final static String varModifierRegex = "\\s*(final)*\\s*";
 	final static String varDeclerationRegex = varModifierRegex + "\\s*([a-zA-Z]+)\\s+(" + varValuesRegex + ",)*(" + varValuesRegex + ")?\\s*";
 	final static String varLineRegex = varDeclerationRegex + END_OF_CODE_LINE;
@@ -34,10 +34,12 @@ public class Parser {
 	
 	static final String LEGAL_CHARS = "\\!#\\$\\%\\&\\(\\)\\*\\+\\-\\.\\/\\:\\;\\<\\=\\>\\?@\\[\\]\\^\\_\\`{\\|}\\~";
 	BufferedReader buffer;
+	private ArrayList<Variable> globalVariables;
 	private Scope mainScope;
 	
 	public Parser(File path) throws IOException, badFileFormatException {
 		this.buffer =  new BufferedReader(new FileReader(path));
+		this.globalVariables = new ArrayList<>();
 	}
 	
 	public Scope parseFile() throws IOException, badFileFormatException{
@@ -66,37 +68,69 @@ public class Parser {
 			if (checkToIgnore(currentLine)) {
 				currentLine = buffer.readLine();
 				continue;
-			} else if (Pattern.matches(HEADER, currentLine) || Pattern.matches(ConditionalScopeHeader, currentLine)) {
+			}
+			if (Pattern.matches(HEADER, currentLine)) {
 				Scope newScope = parseScope(currentLine);
 				newScope.addAllVars(sc.getKnownVariables());
-				sc.addScope(newScope);
+				try{
+					sc.addMethodScope((MethodScope)newScope);
+				}
+				catch(java.lang.ClassCastException e){
+					throw new badFileFormatException("Bad method decleration");
+				}
 				currentLine = buffer.readLine();
 				continue;
-			} else if (Pattern.matches(varLineRegex, currentLine)) {
-				//calls handleVar method to check for variables in this line.
-				sc.addAllVars(handleVar(currentLine.substring(0, currentLine.lastIndexOf(END_OF_CODE_LINE))));
-				currentLine = buffer.readLine();
-				continue;
-			} else if(Pattern.matches(varChangeRegex, currentLine)){
-				sc.addAssignmentVar(handleAssignmentVar(currentLine));
-				currentLine = buffer.readLine();
-				continue;
-			} else if(Pattern.matches(returnStatement, currentLine)){
-				currentLine = buffer.readLine();
-				//TODO
-				continue;
-			} else if(Pattern.matches(methodDecleration + END_OF_CODE_LINE, currentLine)){
-				currentLine = currentLine.substring(0, currentLine.lastIndexOf(")")+1);
-				sc.addCalledMethod(currentLine);
-				currentLine = buffer.readLine();
-				continue;
-			} else if(Pattern.matches(endScopeRegex, currentLine)){
-				return sc;
-			} else{
-				throw new illegalLineException("Line does not match format");
 			}
-		}
+			if (Pattern.matches(varLineRegex, currentLine)) {
+				//calls handleVar method to check for variables in this line.
+				ArrayList<Variable> varsToAdd;
+				if(sc.getName().equals(START_OF_FILE)){ //add as globals
+					varsToAdd = handleVar(currentLine.substring(0, currentLine.lastIndexOf(END_OF_CODE_LINE)), true);
+				} else {//don't add as globals
+					varsToAdd = handleVar(currentLine.substring(0, currentLine.lastIndexOf(END_OF_CODE_LINE)), false);
+				}
+				sc.addAllVars(varsToAdd);
+				currentLine = buffer.readLine();
+				continue;
+			}
+			if (!sc.getName().equals(START_OF_FILE)) {
+				if(Pattern.matches(ConditionalScopeHeader, currentLine)){
+					Scope newScope = parseScope(currentLine);
+					newScope.addAllVars(sc.getKnownVariables());
+					try{
+						sc.addConditionScope((ConditionScope)newScope);
+					}
+					catch(java.lang.ClassCastException e){
+						throw new badFileFormatException("Bad " + newScope.getName() + " decleration");
+					}
+					currentLine = buffer.readLine();
+					continue;
+				}
+				if(Pattern.matches(varChangeRegex, currentLine)){
+					sc.addAssignmentVar(handleAssignmentVar(currentLine));
+					currentLine = buffer.readLine();
+					continue;
+				}
+				if(Pattern.matches(returnStatement, currentLine)){
+					currentLine = buffer.readLine();
+					//TODO
+					continue;
+				}
+				if(Pattern.matches(methodDecleration + END_OF_CODE_LINE, currentLine)){
+					currentLine = currentLine.substring(0, currentLine.lastIndexOf(")")+1);
+					sc.addCalledMethod(currentLine);
+					currentLine = buffer.readLine();
+					continue;
+				}
+				if(Pattern.matches(endScopeRegex, currentLine)){
+					return sc;
+				}
+			}
+			throw new illegalLineException("Line does not match format");
+		}//while
 		if (sc.getName() == START_OF_FILE) {
+//			currentLine = buffer.readLine();
+//			if (checkToIgnore(currentLine)) {
 			return sc;
 		} else {
 			throw new illegalLineException("unexpected EOF");
@@ -116,8 +150,10 @@ public class Parser {
 	 * Receives a line declaring a variable.
 	 * for example: int a = 3 \ int a \ int a,b,c=6
 	 */
-	public static ArrayList<Variable> handleVar(String currentLine) throws badFileFormatException {
+	public static ArrayList<Variable> handleVar(String currentLine, boolean globalFlag) throws badFileFormatException {
 		ArrayList<Variable> vars = new ArrayList<>();
+		if(currentLine.equals(""))
+			return vars;
 		Pattern p = Pattern.compile(varDeclerationRegex);
 		Matcher m = p.matcher(currentLine);
 		m.matches();
@@ -132,9 +168,9 @@ public class Parser {
 				throw new noSuchTypeException("illegal value :" + varType);
 			}
 			if (m.group(3) != null) {
-				vars.add(new Variable(var, m.group(1) , m.group(3), varModifier));
+				vars.add(new Variable(var, m.group(1) , m.group(3), varModifier, globalFlag));
 			} else {
-				vars.add(new Variable(var, m.group(1), varModifier));
+				vars.add(new Variable(var, m.group(1), varModifier, globalFlag));
 			}
 		}
 		return vars;	

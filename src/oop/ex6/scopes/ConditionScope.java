@@ -52,7 +52,7 @@ public class ConditionScope extends Scope {
 			if(conditionBooleanMatcher.matches())
 				continue;
 			else{
-				String conditionType = getVariable(condition).getType().toLowerCase();
+				String conditionType = getVariableByName(condition).getType().toLowerCase();
 				if(Pattern.matches(ACCEPTED_TYPES, conditionType))
 					continue;
 			}
