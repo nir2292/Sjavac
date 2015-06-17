@@ -26,12 +26,15 @@ public class Sjavac {
 			Parser parser = new Parser(sjavac);
 			Scope a = parser.parseFile();
 			Validator v = new Validator(a);
-			System.out.println("Before:");
-			System.out.println("Global vars: ");
-			for(Variable var:Scope.globalVariables)
-				System.out.println(var);
-			printScopeTree(a);
-			v.isValid();
+//			System.out.println("Before:");
+//			System.out.println("Global vars: ");
+//			for(Variable var:Scope.globalVariables)
+//				System.out.println(var);
+//			printScopeTree(a);
+			if(v.isValid())
+				System.out.println("OK");
+			else
+				System.out.println("NOT OK");
 			System.out.println("After:");
 			System.out.println("Global vars: ");
 			for(Variable var:Scope.globalVariables)

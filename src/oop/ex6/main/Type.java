@@ -8,7 +8,7 @@ public enum Type {
 	DOUBLE ("(\\d+)+(.)?(\\d+)*"),
 	STRING ("\"[\\w"+ Parser.LEGAL_CHARS +"]+\""),
 	BOOLEAN ("(true|false|((\\d)+(.)?(\\d+)*))"),
-	CHAR ("[\\w"+ Parser.LEGAL_CHARS +"]");
+	CHAR ("\'[\\w"+ Parser.LEGAL_CHARS +"]\'");
 	
 	private Pattern p;
 	

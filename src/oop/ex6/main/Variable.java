@@ -1,8 +1,11 @@
 package oop.ex6.main;
 
+import java.util.regex.Pattern;
+
 public class Variable {
 	
 	final static String FINAL = "final";
+	final static String varNameRegex = "(^[\\D_]\\w+)|[a-zA-Z]";
 	
 	Type var;
 	String name;
@@ -10,7 +13,10 @@ public class Variable {
 	final boolean globaFlag;
 	final boolean finalFlag;
 	
-	public Variable(Type var, String name, String value, String finalFlag, boolean globalFlag) throws illegalValueException{
+	public Variable(Type var, String name, String value, String finalFlag, boolean globalFlag) throws illegalValueException, illegalNameException{
+		if(!Pattern.matches(varNameRegex, name)){
+			throw new illegalNameException("Bad name " + name);
+		}
 		if (name == null || value == null) {
 			throw new illegalValueException("Bad value for type " + var.toString());
 		}
@@ -29,9 +35,9 @@ public class Variable {
 		}
 	}
 	
-	public Variable(Type var, String name, String finalFlag, boolean globalFlag) throws illegalValueException {
-		if (name == null) {
-			throw new illegalValueException("Bad value for type " + var.toString());
+	public Variable(Type var, String name, String finalFlag, boolean globalFlag) throws illegalValueException, illegalNameException {
+		if (name == null || !Pattern.matches(varNameRegex, name)) {
+			throw new illegalNameException("Bad name " + name);
 		}
 		this.var = var;
 		this.name = name;
