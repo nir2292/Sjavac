@@ -31,7 +31,7 @@ public class Parser {
 //	final static String methodHeader = "void\\s+([\\w]+)\\s*\\(\\s*(("+ methodValuesRegex +"\\s*,\\s*)*\\s*(" + methodValuesRegex + ")?)\\s*\\)\\s*\\{";
 	final static String ConditionalScopeHeader = "(while|if)\\s*\\(\\s*([\\w]+)\\s*((\\|\\||\\&\\&)\\s*([\\w]+)\\s*)*\\s*\\)\\s*\\{";
 	final static String returnStatement = "\\s*(return)\\s*" + END_OF_CODE_LINE;
-	
+
 	static final String LEGAL_CHARS = "\\!#\\$\\%\\&\\(\\)\\*\\+\\-\\.\\/\\:\\;\\<\\=\\>\\?@\\[\\]\\^\\_\\`{\\|}\\~";
 	BufferedReader buffer;
 	private Scope mainScope;
@@ -49,6 +49,7 @@ public class Parser {
 	
 	public void parseMain() throws IOException, badFileFormatException {
 		mainScope = parseScope(START_OF_FILE);
+		
 	}
 	
 //	private void initializeVars(ArrayList<Scope> methods){
@@ -91,12 +92,17 @@ public class Parser {
 				currentLine = buffer.readLine();
 				continue;
 			} else if(Pattern.matches(endScopeRegex, currentLine)){
+				if (sc.getName().equals(START_OF_FILE)) {
+					throw new illegalLineException("Line does not match format");
+				}
 				return sc;
 			} else{
 				throw new illegalLineException("Line does not match format");
 			}
 		}
 		if (sc.getName() == START_OF_FILE) {
+//			currentLine = buffer.readLine();
+//			if (checkToIgnore(currentLine)) {
 			return sc;
 		} else {
 			throw new illegalLineException("unexpected EOF");
@@ -139,7 +145,7 @@ public class Parser {
 		}
 		return vars;	
 	}
-
+	
 	private void validateMethods() {
 		return;
 	}
