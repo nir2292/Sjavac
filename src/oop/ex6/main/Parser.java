@@ -69,6 +69,7 @@ public class Parser {
 			if (checkToIgnore(currentLine)) {
 				currentLine = buffer.readLine();
 				continue;
+
 			}
 			if (Pattern.matches(HEADER, currentLine)) {
 				Scope newScope = parseScope(currentLine);
