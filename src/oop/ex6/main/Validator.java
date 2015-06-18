@@ -24,9 +24,15 @@ public class Validator {
 			String varInfo[] = var.split("\\, ");
 			String varName = varInfo[0];
 			String varNewValue = varInfo[1];
+			Variable varToChange = method.getVariableByName(varName);
 			Variable varOfValue = method.getVariableByName(varNewValue);
 			if(varOfValue != null){
-				method.setVariableValue(varName, varOfValue.getValue());
+				if(varOfValue.getValue() != null)
+					method.setVariableValue(varName, varOfValue.getValue());
+				else if(varToChange.getType().equals(varOfValue.getType())){
+					method.setVariableValue(varName, null);
+				}
+				else throw new illegalValueException("illegal assignment for variable " + varName);
 			}
 			else
 				method.setVariableValue(varName, varNewValue);
