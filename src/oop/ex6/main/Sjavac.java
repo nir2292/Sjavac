@@ -31,18 +31,17 @@ public class Sjavac {
 //			for(Variable var:Scope.globalVariables)
 //				System.out.println(var);
 //			printScopeTree(a);
-			if(v.isValid())
-				System.out.println("OK");
-			else
-				System.out.println("NOT OK");
-			System.out.println("After:");
-			System.out.println("Global vars: ");
-			for(Variable var:Scope.globalVariables)
-				System.out.println(var);
-			printScopeTree(a);
-		} catch (IOException | badFileFormatException e1) {
-			System.out.println("ERROR");
-			e1.printStackTrace();
+			v.isValid();
+//			System.out.println("After:");
+//			System.out.println("Global vars: ");
+//			for(Variable var:Scope.globalVariables)
+//				System.out.println(var);
+//			printScopeTree(a);
+		} catch (badFileFormatException e2){
+			System.out.println("1");
+		} catch (IOException e1){
+			System.out.println("2");
 		}
+		System.out.println("0");
 	}
 }
