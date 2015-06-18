@@ -4,8 +4,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public enum Type {
-	INT ("(\\d)+"),
-	DOUBLE ("(\\d+)+(.)?(\\d+)*"),
+	INT ("\\-*(\\d)+"),
+	DOUBLE ("\\-*(\\d+)+(.)?(\\d+)*"),
 	STRING ("\"[\\w"+ Parser.LEGAL_CHARS +"]+\""),
 	BOOLEAN ("(true|false|((\\d)+(.)?(\\d+)*))"),
 	CHAR ("\'[\\w"+ Parser.LEGAL_CHARS +"]\'");

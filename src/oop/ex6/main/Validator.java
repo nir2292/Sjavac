@@ -65,7 +65,7 @@ public class Validator {
 					if(suitedVar != null)
 						continue;
 					String methodParamType = methodParam.getType();
-					Matcher methodParamTypeMatcher = Type.valueOf(methodParamType).getMatcher(m.group(1));
+					Matcher methodParamTypeMatcher = Type.valueOf(methodParamType).getMatcher(givenParameterName);
 					if(!methodParamTypeMatcher.matches()){
 						throw new badMethodCallException("Parameter " + givenParameterName + " for method " + methodName + " is invalid.");
 					}

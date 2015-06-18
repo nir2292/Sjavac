@@ -32,6 +32,7 @@ public class Sjavac {
 //				System.out.println(var);
 //			printScopeTree(a);
 			v.isValid();
+			System.out.println("0");
 //			System.out.println("After:");
 //			System.out.println("Global vars: ");
 //			for(Variable var:Scope.globalVariables)
@@ -39,9 +40,9 @@ public class Sjavac {
 //			printScopeTree(a);
 		} catch (badFileFormatException e2){
 			System.out.println("1");
+			e2.printStackTrace();
 		} catch (IOException e1){
 			System.out.println("2");
 		}
-		System.out.println("0");
 	}
 }

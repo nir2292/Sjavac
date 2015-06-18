@@ -17,8 +17,8 @@ public class Parser {
 	static final String COMMENT_PREFIX = "//";
 	static final String EMPTY_LINE = "[\\s]*";
 	public static final String START_OF_FILE = "START";
-	final static String varChangeRegex = "(\\w+)\\s*=\\s*([\\w.*]+)\\s*;";
-	final static String varValuesRegex = "\\s*(\\w+)\\s*(\\=\\s*([\\w.'\"*]+)\\s*)?";
+	final static String varChangeRegex = "(\\w+)\\s*=\\s*([\\w.*\\'*\"\\-*]+)\\s*;";
+	final static String varValuesRegex = "\\s*(\\w+)\\s*(\\=\\s*([\\w.\\'*\"*\\-*]+)\\s*)?";
 	final static String varModifierRegex = "\\s*(final)*\\s*";
 	final static String varDeclerationRegex = varModifierRegex + "\\s*([a-zA-Z]+)\\s+(" + varValuesRegex + ",)*(" + varValuesRegex + ")?\\s*";
 	final static String varLineRegex = varDeclerationRegex + END_OF_CODE_LINE;
@@ -35,12 +35,10 @@ public class Parser {
 
 	static final String LEGAL_CHARS = "\\!#\\$\\%\\&\\(\\)\\*\\+\\-\\.\\/\\:\\;\\<\\=\\>\\?@\\[\\]\\^\\_\\`{\\|}\\~";
 	BufferedReader buffer;
-	private ArrayList<Variable> globalVariables;
 	private Scope mainScope;
 	
 	public Parser(File path) throws IOException, badFileFormatException {
 		this.buffer =  new BufferedReader(new FileReader(path));
-		this.globalVariables = new ArrayList<>();
 	}
 	
 	public Scope parseFile() throws IOException, badFileFormatException{
@@ -171,8 +169,12 @@ public class Parser {
 			}
 			if (m.group(3) != null) {
 				Variable varOfValue = sc.getVariableByName(m.group(3));
-				if(varOfValue != null)
-					vars.add(new Variable(var, m.group(1), varOfValue.getValue(), varModifier, globalFlag));
+				if(varOfValue != null){
+					if(varOfValue.getValue() != null)
+						vars.add(new Variable(var, m.group(1), varOfValue.getValue(), varModifier, globalFlag));
+					else throw new illegalValueException("bad value for type " + var);
+						
+				}
 				else
 					vars.add(new Variable(var, m.group(1) , m.group(3), varModifier, globalFlag));
 			} else {

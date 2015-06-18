@@ -31,6 +31,8 @@ public class Variable {
 		if (finalFlag==null) {
 			this.finalFlag = false;
 		} else {
+			if(this.value == null)
+				throw new illegalValueException("Final variable has to be initialized with a value");
 			this.finalFlag = finalFlag.equals(FINAL);
 		}
 	}
@@ -45,7 +47,7 @@ public class Variable {
 		if (finalFlag==null) {
 			this.finalFlag = false;
 		} else {
-			this.finalFlag = finalFlag.equals(FINAL);
+			throw new illegalValueException("Final variable has to be initialized with a value");
 		}
 	}
 	
@@ -62,7 +64,10 @@ public class Variable {
 	}
 	
 	public String getValue() {
-		return this.value;
+		if(this.value != null)
+			return this.value;
+		else
+			return null;
 	}
 	
 	public String getType(){
