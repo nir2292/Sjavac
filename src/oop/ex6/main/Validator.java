@@ -56,15 +56,18 @@ public class Validator {
 			m.usePattern(Pattern.compile(varRegex));
 			int parameterIndex = 0;
 			while(m.find()){
-				Variable suitedVar = method.getVariableByName(m.group(1));
+				String givenParameterName = m.group(1).trim();
+				Variable suitedVar = method.getVariableByName(givenParameterName);
 				Variable methodParam = methodScope.getParameter(parameterIndex);
 				if(suitedVar != null && !suitedVar.getType().equals(methodParam.getType())){
 					throw new badMethodCallException("Parameter " + suitedVar.getName() + " for method " + methodName + " is invalid.");
 				} else {
+					if(suitedVar != null)
+						continue;
 					String methodParamType = methodParam.getType();
 					Matcher methodParamTypeMatcher = Type.valueOf(methodParamType).getMatcher(m.group(1));
 					if(!methodParamTypeMatcher.matches()){
-						throw new badMethodCallException("Parameter " + m.group(1) + " for method " + methodName + " is invalid.");
+						throw new badMethodCallException("Parameter " + givenParameterName + " for method " + methodName + " is invalid.");
 					}
 				}
 				parameterIndex++;
