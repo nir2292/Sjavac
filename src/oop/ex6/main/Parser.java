@@ -175,7 +175,8 @@ public class Parser {
 					else throw new illegalValueException("bad value for type " + var);
 				}
 				else{
-					sc.addAssignmentVar(m.group(1) + ", " + m.group(3));
+					if(varModifier == null)
+						sc.addAssignmentVar(m.group(1) + ", " + m.group(3));
 					try{
 						vars.add(new Variable(var, m.group(1), m.group(3), varModifier, globalFlag));
 					}

@@ -30,7 +30,7 @@ public class Validator {
 				if(varOfValue.getValue() != null)
 					method.setVariableValue(varName, varOfValue.getValue());
 				else if(varToChange.getType().equals(varOfValue.getType())){
-					method.setVariableValue(varName, null);
+					continue;
 				}
 				else throw new illegalValueException("illegal assignment for variable " + varName);
 			}
