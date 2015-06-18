@@ -41,6 +41,8 @@ public class Validator {
 	}
 
 	public boolean isValid() throws badFileFormatException{
+		if(!(validateScope(mainScope) && ValidateMethodAssignments(mainScope)))
+				return false;
 		for(Scope method:methods){
 			if(!(validateScope(method) && ValidateMethodAssignments(method)))
 				return false;
