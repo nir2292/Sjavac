@@ -14,6 +14,15 @@ public class MethodScope extends Scope {
 		this.parameters = new ArrayList<>();
 	}
 	
+	public Variable getParameterByName(String varName) {
+		for(Variable var:parameters){
+			if(var.getName().equals(varName)){
+					return var;
+			}
+		}
+		return null;
+	}
+	
 	public MethodScope(String name, ArrayList<Variable> parameters) {
 		super(name);
 		this.parameters = parameters;
@@ -37,5 +46,16 @@ public class MethodScope extends Scope {
 	public void addToParameters(ArrayList<Variable> params) {
 		for(Variable var:params)
 			this.parameters.add(var);
+	}
+
+	public ArrayList<Variable> getParamers() {
+		return this.parameters;
+	}
+
+	public boolean containsParameter(Variable varOfValue) {
+		for(Variable var:parameters)
+			if(var.getName().equals(varOfValue) && var.getType().equals(varOfValue))
+				return true;
+		return false;
 	}
 }

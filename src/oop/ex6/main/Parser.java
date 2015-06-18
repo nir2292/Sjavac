@@ -17,8 +17,9 @@ public class Parser {
 	static final String COMMENT_PREFIX = "//";
 	static final String EMPTY_LINE = "[\\s]*";
 	public static final String START_OF_FILE = "START";
-	final static String varChangeRegex = "(\\w+)\\s*=\\s*([\\w.*\\'*\"\\-*]+)\\s*;";
-	final static String varValuesRegex = "\\s*(\\w+)\\s*(\\=\\s*([\\w.\\'*\"*\\-*]+)\\s*)?";
+	static final String LEGAL_CHARS = "\\!#\\$\\%\\&\\(\\)\\*\\+\\-\\.\\/\\:\\;\\<\\=\\>\\?@\\[\\]\\^\\_\\`{\\|}\\~";
+	final static String varChangeRegex = "(\\w+)\\s*=\\s*([\\w.*\\-]+)\\s*;";
+	final static String varValuesRegex = "\\s*(\\w+)\\s*(\\=\\s*([\"\\']*[\\w"+LEGAL_CHARS+"]+[\"\\']*)\\s*)?";
 	final static String varModifierRegex = "\\s*(final)*\\s*";
 	final static String varDeclerationRegex = varModifierRegex + "\\s*([a-zA-Z]+)\\s+(" + varValuesRegex + ",)*(" + varValuesRegex + ")?\\s*";
 	final static String varLineRegex = varDeclerationRegex + END_OF_CODE_LINE;
@@ -33,12 +34,13 @@ public class Parser {
 	final static String ConditionalScopeHeader = "(while|if)\\s*\\(\\s*([\\w]+)\\s*((\\|\\||\\&\\&)\\s*([\\w]+)\\s*)*\\s*\\)\\s*\\{";
 	final static String returnStatement = "\\s*(return)\\s*" + END_OF_CODE_LINE;
 
-	static final String LEGAL_CHARS = "\\!#\\$\\%\\&\\(\\)\\*\\+\\-\\.\\/\\:\\;\\<\\=\\>\\?@\\[\\]\\^\\_\\`{\\|}\\~";
 	BufferedReader buffer;
+	private ArrayList<Variable> globalVariables;
 	private Scope mainScope;
 	
 	public Parser(File path) throws IOException, badFileFormatException {
 		this.buffer =  new BufferedReader(new FileReader(path));
+		this.globalVariables = new ArrayList<>();
 	}
 	
 	public Scope parseFile() throws IOException, badFileFormatException{
@@ -162,29 +164,26 @@ public class Parser {
 		m.reset(currentLine.substring(m.start(2) + varType.length()));
 		m.usePattern(Pattern.compile(varValuesRegex));
 		while (m.find()) {
+			String varName = m.group(1);
+			String varValue = m.group(3);
 			try {
 				var = Type.valueOf(varType.toUpperCase());
 			} catch (IllegalArgumentException e) {
 				throw new noSuchTypeException("illegal value :" + varType);
 			}
-			if (m.group(3) != null) {
-				Variable varOfValue = sc.getVariableByName(m.group(3));
-				if(varOfValue != null){
-					if(varOfValue.getValue() != null)
-						vars.add(new Variable(var, m.group(1), varOfValue.getValue(), varModifier, globalFlag));
-					else throw new illegalValueException("bad value for type " + var);
+			if (varValue != null) {
+				try{
+					vars.add(new Variable(var, m.group(1) , m.group(3), varModifier, globalFlag));
 				}
-				else{
-					if(varModifier == null)
-						sc.addAssignmentVar(m.group(1) + ", " + m.group(3));
-					try{
-						vars.add(new Variable(var, m.group(1), m.group(3), varModifier, globalFlag));
-					}
-					catch(illegalValueException e){
-						vars.add(new Variable(var, m.group(1), varModifier, globalFlag));
-					}
+				catch(illegalValueException e){
+					vars.add(new Variable(var, m.group(1), varModifier, globalFlag));
+					sc.addAssignmentVar(m.group(1) + ", " + m.group(3));
 				}
 			} else {
+				if(varModifier != null){
+					if(varModifier.equals("final"))
+						throw new illegalValueException("Final variable has to be initialized with a value");
+				}
 				vars.add(new Variable(var, m.group(1), varModifier, globalFlag));
 			}
 		}

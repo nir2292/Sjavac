@@ -59,11 +59,12 @@ public class ConditionScope extends Scope {
 			if(conditionBooleanMatcher.matches())
 				continue;
 			else{
-				String conditionType = getVariableByName(condition).getType().toLowerCase();
-				if(Pattern.matches(ACCEPTED_TYPES, conditionType))
+				Variable var = getVariableByName(condition);
+				String conditionType = var.getType().toLowerCase();
+				if(Pattern.matches(ACCEPTED_TYPES, conditionType) && var.getValue() != null)
 					continue;
 			}
-			throw new badConditionFormat("Condition has to be of type boolean.");
+			throw new badConditionFormat("Condition has to be of type boolean and initialized.");
 		}
 	}
 

@@ -5,7 +5,7 @@ import oop.ex6.main.*;
 
 public class Scope {
 	static public ArrayList<Variable> globalVariables = new ArrayList<>();
-	private ArrayList<Variable> knownVariables;
+	ArrayList<Variable> knownVariables;
 	private ArrayList<String> changedVars;
 	private ArrayList<String> calledMethods;
 	private ArrayList<MethodScope> internalMethods;
@@ -168,7 +168,7 @@ public class Scope {
 	}
 
 	/**
-	 * @param group
+	 * @param varName
 	 * @return the local variable with the name varName, if found, if not, the global variable with varName
 	 * @throws noSuchVariable if either aren't found
 	 */

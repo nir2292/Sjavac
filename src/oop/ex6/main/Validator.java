@@ -20,6 +20,12 @@ public class Validator {
 
 	private boolean ValidateMethodAssignments(Scope method) throws badFileFormatException {
 		ArrayList<String> changedVariables = method.getChangedVars();
+		MethodScope msc = null;
+		try{
+			msc = (MethodScope)method;
+		}
+		catch(java.lang.ClassCastException e){
+		}
 		for(String var:changedVariables){
 			String varInfo[] = var.split("\\, ");
 			String varName = varInfo[0];
@@ -27,12 +33,18 @@ public class Validator {
 			Variable varToChange = method.getVariableByName(varName);
 			Variable varOfValue = method.getVariableByName(varNewValue);
 			if(varOfValue != null){
-				if(varOfValue.getValue() != null)
-					method.setVariableValue(varName, varOfValue.getValue());
-				else if(varToChange.getType().equals(varOfValue.getType())){
-					continue;
+				if(varOfValue.getValue() == null){
+					if(msc != null){
+						Variable methodParam = msc.getParameterByName(varOfValue.getName());
+						if(methodParam == null)
+							throw new illegalAssignmentException("can't assign null to value of " + varName);
+						else
+							continue;
+					}
+					else
+						throw new illegalAssignmentException("can't assign null to value of " + varName);
 				}
-				else throw new illegalValueException("illegal assignment for variable " + varName);
+				else method.setVariableValue(varName, varOfValue.getValue());
 			}
 			else
 				method.setVariableValue(varName, varNewValue);
@@ -42,7 +54,7 @@ public class Validator {
 
 	public boolean isValid() throws badFileFormatException{
 		if(!(validateScope(mainScope) && ValidateMethodAssignments(mainScope)))
-				return false;
+			return false;
 		for(Scope method:methods){
 			if(!(validateScope(method) && ValidateMethodAssignments(method)))
 				return false;

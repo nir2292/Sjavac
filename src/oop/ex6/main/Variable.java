@@ -31,8 +31,6 @@ public class Variable {
 		if (finalFlag==null) {
 			this.finalFlag = false;
 		} else {
-			if(this.value == null)
-				throw new illegalValueException("Final variable has to be initialized with a value");
 			this.finalFlag = finalFlag.equals(FINAL);
 		}
 	}
@@ -41,13 +39,17 @@ public class Variable {
 		if (name == null || !Pattern.matches(varNameRegex, name)) {
 			throw new illegalNameException("Bad name " + name);
 		}
+		this.value = null;
 		this.var = var;
 		this.name = name;
 		this.globaFlag = globalFlag;
 		if (finalFlag==null) {
 			this.finalFlag = false;
 		} else {
-			throw new illegalValueException("Final variable has to be initialized with a value");
+			if(finalFlag.equals("final"))
+				this.finalFlag = true;
+			else
+				this.finalFlag = false;
 		}
 	}
 	
@@ -64,10 +66,7 @@ public class Variable {
 	}
 	
 	public String getValue() {
-		if(this.value != null)
-			return this.value;
-		else
-			return null;
+		return this.value;
 	}
 	
 	public String getType(){
@@ -87,7 +86,10 @@ public class Variable {
 				throw new illegalValueException("Bad value for type " + var);
 			}
 		} else {
-			throw new illegalAssignmentException("Cannot set value for final variable.");
+			if(this.value == null)
+				this.value = value;
+			else
+				throw new illegalAssignmentException("Cannot set value for final variable" + this.name);
 		}
 	}
 
