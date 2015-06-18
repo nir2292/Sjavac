@@ -152,8 +152,9 @@ public class Parser {
 	 */
 	public static ArrayList<Variable> handleVar(String currentLine, boolean globalFlag, Scope sc) throws badFileFormatException {
 		ArrayList<Variable> vars = new ArrayList<>();
-		if(currentLine.equals(""))
+		if (currentLine.equals("")){
 			return vars;
+		}
 		Pattern p = Pattern.compile(varDeclerationRegex);
 		Matcher m = p.matcher(currentLine);
 		m.matches();
@@ -169,14 +170,17 @@ public class Parser {
 			}
 			if (m.group(3) != null) {
 				Variable varOfValue = sc.getVariableByName(m.group(3));
-				if(varOfValue != null){
-					if(varOfValue.getValue() != null)
+				if(varOfValue != null) {
+					if(varOfValue.getValue() != null) {
 						vars.add(new Variable(var, m.group(1), varOfValue.getValue(), varModifier, globalFlag));
-					else throw new illegalValueException("bad value for type " + var);
+//						sc.addAssignmentVar(handleAssignmentVar(currentLine));
+					} else {
+						throw new illegalValueException("bad value for type " + var);
+					}
 						
-				}
-				else
+				} else {
 					vars.add(new Variable(var, m.group(1) , m.group(3), varModifier, globalFlag));
+				}
 			} else {
 				vars.add(new Variable(var, m.group(1), varModifier, globalFlag));
 			}
