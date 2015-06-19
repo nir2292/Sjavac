@@ -131,7 +131,7 @@ public class Parser {
 				if(Pattern.matches(ConditionalScopeHeader, currentLine)){
 					Scope newScope = parseScope(currentLine);
 					newScope.addAllVars(sc.getKnownVariables());
-					try{
+					try {
 						sc.addConditionScope((ConditionScope)newScope);
 					}
 					catch(java.lang.ClassCastException e){
