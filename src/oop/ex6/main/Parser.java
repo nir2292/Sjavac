@@ -177,7 +177,11 @@ public class Parser {
 				}
 				catch(illegalValueException e){
 					vars.add(new Variable(var, m.group(1), varModifier, globalFlag));
-					sc.addAssignmentVar(m.group(1) + ", " + m.group(3));
+					if (sc.getVariableByName(m.group(3))!=null) {
+						sc.addAssignmentVar(m.group(1) + ", " + m.group(3));
+					} else {
+						throw new illegalAssignmentException("Variable " + m.group(3) + " has not been initialized");
+					}
 				}
 			} else {
 				if(varModifier != null){
