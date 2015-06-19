@@ -60,9 +60,43 @@ public class Parser {
 //			method.addAllVars(globalVars);
 //		}
 //	}
+	public void parseGlobalScope(Scope sc) throws IOException, badFileFormatException {
+		String currentLine = buffer.readLine();
+		int depth = 0;
+		
+		while(currentLine != null){
+			currentLine = currentLine.trim();
+			if ((Pattern.matches(methodHeader, currentLine))||(Pattern.matches(ConditionalScopeHeader, currentLine))) {
+				depth++;
+				currentLine = buffer.readLine();
+				continue;
+			}
+			if(Pattern.matches(endScopeRegex, currentLine)){
+				depth--;
+				currentLine = buffer.readLine();
+				continue;
+			}
+			if ((Pattern.matches(varLineRegex, currentLine)) && (depth==0) ) {
+				//calls handleVar method to check for variables in this line.
+				ArrayList<Variable> varsToAdd;
+				varsToAdd = handleVar(currentLine.substring(0, currentLine.lastIndexOf(END_OF_CODE_LINE)), true, sc);
+				sc.addAllVars(varsToAdd);
+				currentLine = buffer.readLine();
+				continue;
+			}
+			currentLine = buffer.readLine();
+		}
+	}
+	
 	
 	public Scope parseScope(String header) throws IOException, badFileFormatException {
 		Scope sc = ScopeFactory.getScope(header);
+		if(sc.getName().equals(START_OF_FILE)){
+			buffer.mark(10000);
+			parseGlobalScope(sc);
+			buffer.reset();
+			
+		}
 		String currentLine = buffer.readLine();
 		while(currentLine != null){
 			currentLine = currentLine.trim();
@@ -83,19 +117,20 @@ public class Parser {
 				currentLine = buffer.readLine();
 				continue;
 			}
-			if (Pattern.matches(varLineRegex, currentLine)) {
-				//calls handleVar method to check for variables in this line.
-				ArrayList<Variable> varsToAdd;
-				if(sc.getName().equals(START_OF_FILE)){ //add as globals
-					varsToAdd = handleVar(currentLine.substring(0, currentLine.lastIndexOf(END_OF_CODE_LINE)), true, sc);
-				} else {//don't add as globals
-					varsToAdd = handleVar(currentLine.substring(0, currentLine.lastIndexOf(END_OF_CODE_LINE)), false, sc);
-				}
-				sc.addAllVars(varsToAdd);
-				currentLine = buffer.readLine();
-				continue;
-			}
+			
 			if (!sc.getName().equals(START_OF_FILE)) {
+				if (Pattern.matches(varLineRegex, currentLine)) {
+					//calls handleVar method to check for variables in this line.
+					ArrayList<Variable> varsToAdd;
+					if(sc.getName().equals(START_OF_FILE)){ //add as globals
+						varsToAdd = handleVar(currentLine.substring(0, currentLine.lastIndexOf(END_OF_CODE_LINE)), true, sc);
+					} else {//don't add as globals
+						varsToAdd = handleVar(currentLine.substring(0, currentLine.lastIndexOf(END_OF_CODE_LINE)), false, sc);
+					}
+					sc.addAllVars(varsToAdd);
+					currentLine = buffer.readLine();
+					continue;
+				}
 				if(Pattern.matches(ConditionalScopeHeader, currentLine)){
 					Scope newScope = parseScope(currentLine);
 					newScope.addAllVars(sc.getKnownVariables());
