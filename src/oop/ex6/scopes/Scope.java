@@ -8,6 +8,7 @@ public class Scope {
 	ArrayList<Variable> knownVariables;
 	private ArrayList<String> changedVars;
 	private ArrayList<String> calledMethods;
+	private ArrayList<String> chronologyRun;
 	private ArrayList<MethodScope> internalMethods;
 	private ArrayList<ConditionScope> internalConditionScopes;
 	private String name;
@@ -18,6 +19,7 @@ public class Scope {
 		this.internalMethods = new ArrayList<>();
 		this.internalConditionScopes = new ArrayList<>();
 		this.calledMethods = new ArrayList<>();
+		this.chronologyRun = new ArrayList<>();
 		this.name = name;
 	}
 	
@@ -27,10 +29,19 @@ public class Scope {
 		this.internalMethods = new ArrayList<>();
 		this.internalConditionScopes = new ArrayList<>();
 		this.calledMethods = new ArrayList<>();
+		this.chronologyRun = new ArrayList<>();
 		this.name = name;
 		addAllVars(vars);
 	}
 	
+	public ArrayList<String> getChronologyRun() {
+		return chronologyRun;
+	}
+
+	public void addChronologyRun(String chronologyRun) {
+		this.chronologyRun.add(chronologyRun);
+	}
+
 	@Override
 	public String toString() {
 		String representation = "Scope: " + this.getName() + ", variables: ";
@@ -43,6 +54,9 @@ public class Scope {
 		representation = representation + " Calling methods: ";
 		for(String mthd:calledMethods)
 			representation = representation + mthd + " ";
+		representation = representation + " Chronology ";
+		for(String chrn:chronologyRun)
+			representation = representation + chrn + " ";
 		return representation + " " + this.getClass();
 	}
 	
@@ -62,7 +76,7 @@ public class Scope {
 	
 	public void addVar(Variable var) throws illegalVariableDeclerationException{
 		if(var.isGlobal()){
-			if(!globalVariables.contains(var))
+			if(!containGlobalVar(var))
 				globalVariables.add(var);
 			else
 				throw new illegalVariableDeclerationException("Variable " + var.getName() + " already declared");
@@ -80,6 +94,13 @@ public class Scope {
 					scope.addVar(var);
 				}
 			}
+	}
+
+	private boolean containGlobalVar(Variable var) {
+		for(Variable globalVar:globalVariables)
+			if(globalVar.getName().equals(var.getName()))
+				return true;
+		return false;
 	}
 
 	public void addAllVars(ArrayList<Variable> vars) throws illegalVariableDeclerationException{
@@ -100,12 +121,26 @@ public class Scope {
 		return changedVars;
 	}
 	
+	public static void setGlobalVariables(ArrayList<Variable> globalVars) {
+		Scope.resetGlobalVariables();
+		for(Variable var:globalVars)
+			Scope.globalVariables.add(new Variable(var));
+	}
+
+	public void setKnownVariables(ArrayList<Variable> knownVariables) {
+		this.knownVariables = knownVariables;
+	}
+
 	public ArrayList<MethodScope> getInternalMethods(){
 		return this.internalMethods;
 	}
 	
 	public ArrayList<ConditionScope> getInternalConditionScopes(){
 		return this.internalConditionScopes;
+	}
+	
+	static public void resetGlobalVariables(){
+		Scope.globalVariables = new ArrayList<>();
 	}
 	
 	/**

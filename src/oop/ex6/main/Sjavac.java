@@ -20,7 +20,6 @@ public class Sjavac {
 	}
 	
 	public static void main(String[] args) {
-		
 		File sjavac = new File(args[0]);
 		try {
 			Parser parser = new Parser(sjavac);
@@ -31,7 +30,9 @@ public class Sjavac {
 //			for(Variable var:Scope.globalVariables)
 //				System.out.println(var);
 //			printScopeTree(a);
-			v.isValid();
+			if(!v.isValid())
+				throw new badFileFormatException("");
+			Scope.resetGlobalVariables();
 			System.out.println("0");
 //			System.out.println("After:");
 //			System.out.println("Global vars: ");
@@ -39,9 +40,11 @@ public class Sjavac {
 //				System.out.println(var);
 //			printScopeTree(a);
 		} catch (badFileFormatException e2){
+			Scope.resetGlobalVariables();
 			System.out.println("1");
 			e2.printStackTrace();
 		} catch (IOException e1){
+			Scope.resetGlobalVariables();
 			System.out.println("2");
 		}
 	}

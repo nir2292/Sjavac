@@ -1,10 +1,12 @@
 package oop.ex6.scopes;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import oop.ex6.main.Parser;
+import oop.ex6.main.Variable;
 import oop.ex6.main.badFileFormatException;
 
 public class ScopeFactory {
@@ -28,8 +30,11 @@ public class ScopeFactory {
 			MethodScope scope = new MethodScope(m.group(1));
 			String[] methodParameters = m.group(2).split(",");
 			for (String parameter: methodParameters) {
-				scope.addAllVars(Parser.handleVar(parameter.trim(), false, scope));
-				scope.addToParameters(Parser.handleVar(parameter.trim(), false, scope));
+				ArrayList<Variable> parameters = Parser.handleVar(parameter.trim(), false, scope);
+				for(Variable var:parameters)
+					var.setValue(Variable.isParameter);
+				scope.addAllVars(parameters);
+				scope.addToParameters(parameters);
 			}
 			return scope;
 		} else if (Pattern.matches(ConditionalScopeHeader, header)) {

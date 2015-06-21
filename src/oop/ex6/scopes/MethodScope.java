@@ -3,6 +3,7 @@ package oop.ex6.scopes;
 import java.util.ArrayList;
 
 import oop.ex6.main.Variable;
+import oop.ex6.main.badFileFormatException;
 import oop.ex6.main.badMethodCallException;
 
 public class MethodScope extends Scope {
@@ -43,9 +44,11 @@ public class MethodScope extends Scope {
 		}
 	}
 
-	public void addToParameters(ArrayList<Variable> params) {
-		for(Variable var:params)
+	public void addToParameters(ArrayList<Variable> params) throws badFileFormatException {
+		for(Variable var:params){
+			var.setValue(Variable.isParameter);
 			this.parameters.add(var);
+		}
 	}
 
 	public ArrayList<Variable> getParamers() {

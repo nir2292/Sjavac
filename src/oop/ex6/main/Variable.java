@@ -10,6 +10,7 @@ public class Variable {
 	Type var;
 	String name;
 	String value;
+	public static final String isParameter = "parameter";
 	final boolean globaFlag;
 	final boolean finalFlag;
 	
@@ -20,7 +21,7 @@ public class Variable {
 		if (name == null || value == null) {
 			throw new illegalValueException("Bad value for type " + var.toString());
 		}
-		if (var.getMatcher(value).matches()) {
+		if (var.getMatcher(value).matches() || value == Variable.isParameter) {
 			this.value = value;
 		} else {
 			throw new illegalValueException("Bad value for type " + var.toString());
@@ -53,6 +54,21 @@ public class Variable {
 		}
 	}
 	
+	public Variable(Variable var) {
+		this.finalFlag = var.finalFlag;
+		this.globaFlag = var.isGlobal();
+		this.var = var.getEnumsType();
+		this.name = var.getName();
+		if(var.getValue() == null)
+			this.value = null;
+		else {
+			if(value != Variable.isParameter)
+				this.value = new String(var.getValue());
+			else
+				this.value = Variable.isParameter;
+		}
+	}
+
 	@Override
 	public String toString() {
 		String finalToType = "";
@@ -73,6 +89,10 @@ public class Variable {
 		return var.name();
 	}
 	
+	public Type getEnumsType(){
+		return this.var;
+	}
+	
 	/**
 	 * @param value the value to set
 	 * @throws illegalValueException 
@@ -80,7 +100,7 @@ public class Variable {
 	 */
 	public void setValue(String value) throws badFileFormatException {
 		if (!finalFlag) {
-			if (var.getMatcher(value).matches()) {
+			if (var.getMatcher(value).matches() || value == Variable.isParameter) {
 				this.value = value;
 			} else {
 				throw new illegalValueException("Bad value for type " + var);

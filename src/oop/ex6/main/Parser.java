@@ -18,7 +18,7 @@ public class Parser {
 	static final String EMPTY_LINE = "[\\s]*";
 	public static final String START_OF_FILE = "START";
 	static final String LEGAL_CHARS = "\\!#\\$\\%\\&\\(\\)\\*\\+\\-\\.\\/\\:\\;\\<\\=\\>\\?@\\[\\]\\^\\_\\`{\\|}\\~";
-	final static String varChangeRegex = "(\\w+)\\s*=\\s*([\\w.*\\-]+)\\s*;";
+	final static String varChangeRegex = "(\\w+)\\s*=\\s*\"*\\'*([\\w.*\\-]+)\\'*\"*\\s*;";
 	final static String varValuesRegex = "\\s*(\\w+)\\s*(\\=\\s*([\"\\']*[\\w"+LEGAL_CHARS+"]+[\"\\']*)\\s*)?";
 	final static String varModifierRegex = "\\s*(final)*\\s*";
 	final static String varDeclerationRegex = varModifierRegex + "\\s*([a-zA-Z]+)\\s+(" + varValuesRegex + ",)*(" + varValuesRegex + ")?\\s*";
@@ -60,43 +60,9 @@ public class Parser {
 //			method.addAllVars(globalVars);
 //		}
 //	}
-	public void parseGlobalScope(Scope sc) throws IOException, badFileFormatException {
-		String currentLine = buffer.readLine();
-		int depth = 0;
-		
-		while(currentLine != null){
-			currentLine = currentLine.trim();
-			if ((Pattern.matches(methodHeader, currentLine))||(Pattern.matches(ConditionalScopeHeader, currentLine))) {
-				depth++;
-				currentLine = buffer.readLine();
-				continue;
-			}
-			if(Pattern.matches(endScopeRegex, currentLine)){
-				depth--;
-				currentLine = buffer.readLine();
-				continue;
-			}
-			if ((Pattern.matches(varLineRegex, currentLine)) && (depth==0) ) {
-				//calls handleVar method to check for variables in this line.
-				ArrayList<Variable> varsToAdd;
-				varsToAdd = handleVar(currentLine.substring(0, currentLine.lastIndexOf(END_OF_CODE_LINE)), true, sc);
-				sc.addAllVars(varsToAdd);
-				currentLine = buffer.readLine();
-				continue;
-			}
-			currentLine = buffer.readLine();
-		}
-	}
-	
 	
 	public Scope parseScope(String header) throws IOException, badFileFormatException {
 		Scope sc = ScopeFactory.getScope(header);
-		if(sc.getName().equals(START_OF_FILE)){
-			buffer.mark(10000);
-			parseGlobalScope(sc);
-			buffer.reset();
-			
-		}
 		String currentLine = buffer.readLine();
 		while(currentLine != null){
 			currentLine = currentLine.trim();
@@ -118,12 +84,15 @@ public class Parser {
 				continue;
 			}
 			if (Pattern.matches(varLineRegex, currentLine)) {
-				if (!sc.getName().equals(START_OF_FILE)) {
-					//calls handleVar method to check for variables in this line.
-					ArrayList<Variable> varsToAdd;
+				//calls handleVar method to check for variables in this line.
+				ArrayList<Variable> varsToAdd;
+				if(sc.getName().equals(START_OF_FILE)){ //add as globals
+					varsToAdd = handleVar(currentLine.substring(0, currentLine.lastIndexOf(END_OF_CODE_LINE)), true, sc);
+				} else {//don't add as globals
 					varsToAdd = handleVar(currentLine.substring(0, currentLine.lastIndexOf(END_OF_CODE_LINE)), false, sc);
-					sc.addAllVars(varsToAdd);
 				}
+				sc.addAllVars(varsToAdd);
+				sc.addChronologyRun(currentLine.substring(0, currentLine.lastIndexOf(END_OF_CODE_LINE)));
 				currentLine = buffer.readLine();
 				continue;
 			}
@@ -131,8 +100,9 @@ public class Parser {
 				if(Pattern.matches(ConditionalScopeHeader, currentLine)){
 					Scope newScope = parseScope(currentLine);
 					newScope.addAllVars(sc.getKnownVariables());
-					try {
+					try{
 						sc.addConditionScope((ConditionScope)newScope);
+						sc.addChronologyRun(currentLine);
 					}
 					catch(java.lang.ClassCastException e){
 						throw new badFileFormatException("Bad " + newScope.getName() + " decleration");
@@ -141,18 +111,19 @@ public class Parser {
 					continue;
 				}
 				if(Pattern.matches(varChangeRegex, currentLine)){
-					sc.addAssignmentVar(handleAssignmentVar(currentLine));
+					sc.addAssignmentVar(handleAssignmentVar(currentLine.substring(0, currentLine.lastIndexOf(END_OF_CODE_LINE))));
+					sc.addChronologyRun(handleAssignmentVar(currentLine.substring(0, currentLine.lastIndexOf(END_OF_CODE_LINE))));
 					currentLine = buffer.readLine();
 					continue;
 				}
 				if(Pattern.matches(returnStatement, currentLine)){
 					currentLine = buffer.readLine();
-					//TODO
 					continue;
 				}
 				if(Pattern.matches(callMethod, currentLine)){
 					currentLine = currentLine.substring(0, currentLine.lastIndexOf(")")+1);
 					sc.addCalledMethod(currentLine);
+					sc.addChronologyRun(currentLine);
 					currentLine = buffer.readLine();
 					continue;
 				}
@@ -172,12 +143,14 @@ public class Parser {
 	}
 	
 	private String handleAssignmentVar(String currentLine) {
-		Pattern p = Pattern.compile(varChangeRegex);
-		Matcher m = p.matcher(currentLine);
-		m.matches();
-		String varName = m.group(1).trim();
-		String varNewValue = m.group(2).trim();
-		return varName + ", " + varNewValue;
+//		Pattern p = Pattern.compile(varChangeRegex);
+//		Matcher m = p.matcher(currentLine);
+//		m.matches();
+//		String varName = m.group(1).trim();
+//		String varNewValue = m.group(2).trim();
+//		return varName + ", " + varNewValue;
+		String[] lineSplit = currentLine.split("\\s*\\=\\s*");
+		return lineSplit[0] + ", " + lineSplit[1];
 	}
 
 	/*
@@ -209,11 +182,7 @@ public class Parser {
 				}
 				catch(illegalValueException e){
 					vars.add(new Variable(var, m.group(1), varModifier, globalFlag));
-					if (sc.getVariableByName(m.group(3))!=null) {
-						sc.addAssignmentVar(m.group(1) + ", " + m.group(3));
-					} else {
-						throw new illegalAssignmentException("Variable " + m.group(3) + " has not been initialized");
-					}
+					sc.addAssignmentVar(m.group(1) + ", " + m.group(3));
 				}
 			} else {
 				if(varModifier != null){
@@ -224,10 +193,6 @@ public class Parser {
 			}
 		}
 		return vars;	
-	}
-	
-	private void validateMethods() {
-		return;
 	}
 	
 	private boolean checkToIgnore(String line) {
