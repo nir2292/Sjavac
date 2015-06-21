@@ -13,25 +13,24 @@ Sjavac.java
 Type.java
 Validator.java
 Variable.java
-VariableFactory.java
 badFileFormatException.java
 badMethodCallException.java
 endOfFileException.java
 illegalAssignmentException.java
+illegalCodeFormatException.java
 illegalLineException.java
 illegalNameException.java
 illegalValueException.java
+InValidCodeException.java
 noSuchMethodException.java
 noSuchTypeException.java
 noSuchVariableException.java
 
-
-
 -- oop.ex6.scopes --
+ScopeFactory.java
+Scope.java
 ConditionScope.java
 MethodScope.java
-Scope.java
-ScopeFactory.java
 badConditionFormat.java
 illegalVariableDeclerationException.java
 
