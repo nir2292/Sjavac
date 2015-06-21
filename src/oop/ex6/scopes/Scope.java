@@ -85,7 +85,7 @@ public class Scope {
 			try {
 				Variable sameVar = getVariable(var);
 				throw new illegalVariableDeclerationException("Variable " + var.getName() + " already declared");
-			} catch (noSuchVariable e) {
+			} catch (noSuchVariableException e) {
 				knownVariables.add(var);
 				for (MethodScope scope : internalMethods){
 					scope.addVar(var);
@@ -149,7 +149,7 @@ public class Scope {
 	 * @return True iff the given var's and the found var's name AND type match.
 	 * @throws noSuchVariable
 	 */
-	public Variable getVariable(Variable variable) throws noSuchVariable{
+	public Variable getVariable(Variable variable) throws noSuchVariableException{
 		Variable foundVar;
 		String variableName = variable.getName();
 		String variableType = variable.getType();
@@ -160,7 +160,7 @@ public class Scope {
 		for(Variable var:globalVariables)
 			if(var.getName().equals(variableName) && var.getType().equals(variableName))
 				return var;
-		throw new noSuchVariable("Unknown variable " + variableName);
+		throw new noSuchVariableException("Unknown variable " + variableName);
 	}
 	
 	public void setVariableValue(String varName, String value) throws InValidCodeException{

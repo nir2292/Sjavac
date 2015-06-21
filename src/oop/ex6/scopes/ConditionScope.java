@@ -6,7 +6,7 @@ import java.util.regex.Pattern;
 
 import oop.ex6.main.Type;
 import oop.ex6.main.Variable;
-import oop.ex6.main.noSuchVariable;
+import oop.ex6.main.noSuchVariableException;
 
 public class ConditionScope extends Scope {
 	private static final String ACCEPTED_TYPES = "int|boolean|double";
@@ -47,12 +47,12 @@ public class ConditionScope extends Scope {
 		}
 	}
 	
-	public boolean validateConditions() throws badConditionFormat, noSuchVariable{
+	public boolean validateConditions() throws badConditionFormat, noSuchVariableException{
 		checkConditions();
 		return true;
 	}
 
-	private void checkConditions() throws badConditionFormat, noSuchVariable {
+	private void checkConditions() throws badConditionFormat, noSuchVariableException {
 		for(String condition:conditions){
 			conditionBooleanMatcher = Type.BOOLEAN.getMatcher(condition);
 			if(conditionBooleanMatcher.matches())

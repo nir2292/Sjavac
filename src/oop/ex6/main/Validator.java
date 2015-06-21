@@ -151,7 +151,7 @@ public class Validator {
 		String varNewValue = varInfo[1];
 		Variable varToChange = method.getVariableByName(varName);
 		if(varToChange == null)
-			throw new noSuchVariable("unknown variable " + varName);
+			throw new noSuchVariableException("unknown variable " + varName);
 		Variable varOfValue = method.getVariableByName(varNewValue);
 		if(varOfValue != null){
 			if(varOfValue.getValue() == null){

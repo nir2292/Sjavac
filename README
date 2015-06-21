@@ -23,7 +23,8 @@ illegalNameException.java
 illegalValueException.java
 noSuchMethodException.java
 noSuchTypeException.java
-noSuchVariable.java
+noSuchVariableException.java
+
 
 
 -- oop.ex6.scopes --
@@ -63,4 +64,4 @@ Variable objects control variable handling using Enum for Type safety control.
 
 Exceptions that causes the code to be invalid inherit from badFileFormatException.
 Exceptions that causes the code to fail because of illegal code usage inherit from illegalCodeFormatException.
-using except
+Both super-class Exception types inherit from InValidCodeException.
