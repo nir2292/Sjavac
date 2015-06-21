@@ -89,7 +89,7 @@ public class Validator {
 	private boolean runMethod(String parentMethodName, Scope method, int conditionIndex) throws badFileFormatException{
 		for(String command:method.getChronologyRun()){
 			if(Pattern.matches(callMethod, command)){
-				if(command.substring(0, command.indexOf("(")).equals(parentMethodName))
+				if(command.substring(0, command.indexOf("(")).trim().equals(parentMethodName.trim()))
 					continue;
 				String methodName = command.substring(0, command.indexOf("(")).trim();
 				runMethod(methodName, mainScope.getInternalMethod(methodName), 0);
