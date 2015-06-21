@@ -114,7 +114,6 @@ public class Parser {
 						if (!Pattern.matches(endScopeRegex, currentLine)) {
 							throw new illegalLineException("Return statement is not at the end of method scope");
 						} else {
-							currentLine = buffer.readLine();
 							return sc;
 						}
 					} catch (ClassCastException e) {
