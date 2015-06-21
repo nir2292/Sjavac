@@ -74,10 +74,10 @@ public class Parser {
 			if (Pattern.matches(methodHeader, currentLine)) {
 				Scope newScope = parseScope(currentLine);
 				newScope.addAllVars(sc.getKnownVariables());
-				try{
+				try {
 					sc.addMethodScope((MethodScope)newScope);
 				}
-				catch(java.lang.ClassCastException e){
+				catch(ClassCastException e){
 					throw new badFileFormatException("Bad method decleration");
 				}
 				currentLine = buffer.readLine();
@@ -118,6 +118,13 @@ public class Parser {
 				}
 				if(Pattern.matches(returnStatement, currentLine)){
 					currentLine = buffer.readLine();
+					if (!Pattern.matches(endScopeRegex, currentLine)) {
+						try {
+							MethodScope scs = (MethodScope)sc;
+						} catch (ClassCastException e) {
+							throw new illegalLineException("Return statement is not at the end of method scope");
+						}
+					}
 					continue;
 				}
 				if(Pattern.matches(callMethod, currentLine)){
