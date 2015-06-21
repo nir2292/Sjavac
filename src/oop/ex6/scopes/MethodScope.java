@@ -8,11 +8,13 @@ import oop.ex6.main.badMethodCallException;
 
 public class MethodScope extends Scope {
 	private ArrayList<Variable> parameters;
+	private boolean returned;
 
 	//Constructs a method with no parameters
 	public MethodScope(String name) {
 		super(name);
 		this.parameters = new ArrayList<>();
+		this.returned = false;
 	}
 	
 	public Variable getParameterByName(String varName) {
@@ -60,5 +62,12 @@ public class MethodScope extends Scope {
 			if(var.getName().equals(varOfValue) && var.getType().equals(varOfValue))
 				return true;
 		return false;
+	}
+	
+	public void markReturned(){
+		this.returned = true;
+	}
+	public boolean isReturned(){
+		return this.returned;
 	}
 }

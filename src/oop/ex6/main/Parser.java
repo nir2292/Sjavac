@@ -118,14 +118,18 @@ public class Parser {
 				}
 				if(Pattern.matches(returnStatement, currentLine)){
 					currentLine = buffer.readLine();
-					if (!Pattern.matches(endScopeRegex, currentLine)) {
-						try {
-							MethodScope scs = (MethodScope)sc;
-						} catch (ClassCastException e) {
+					try {
+						MethodScope scs = (MethodScope)sc;
+						scs.markReturned();
+						if (!Pattern.matches(endScopeRegex, currentLine)) {
 							throw new illegalLineException("Return statement is not at the end of method scope");
+						} else {
+							currentLine = buffer.readLine();
+							return sc;
 						}
+					} catch (ClassCastException e) {
+						continue;
 					}
-					continue;
 				}
 				if(Pattern.matches(callMethod, currentLine)){
 					currentLine = currentLine.substring(0, currentLine.lastIndexOf(")")+1);
