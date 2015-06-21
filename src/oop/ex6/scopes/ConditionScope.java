@@ -12,7 +12,6 @@ public class ConditionScope extends Scope {
 	private static final String ACCEPTED_TYPES = "int|boolean|double";
 	private Matcher conditionBooleanMatcher;
 	private ArrayList<String> conditions;
-	private Matcher conditionValueMatcher;
 	
 	public ConditionScope(String name) {
 		super(name);
