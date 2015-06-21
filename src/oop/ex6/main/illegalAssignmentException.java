@@ -1,6 +1,6 @@
 package oop.ex6.main;
 
-public class illegalAssignmentException extends badFileFormatException {
+public class illegalAssignmentException extends illegalCodeFormatException {
 
 	public illegalAssignmentException(String message) {
 		super(message);

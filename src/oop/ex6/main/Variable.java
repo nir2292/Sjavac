@@ -14,7 +14,7 @@ public class Variable {
 	final boolean globaFlag;
 	final boolean finalFlag;
 	
-	public Variable(Type var, String name, String value, String finalFlag, boolean globalFlag) throws illegalValueException, illegalNameException{
+	public Variable(Type var, String name, String value, String finalFlag, boolean globalFlag) throws InValidCodeException {
 		if(!Pattern.matches(varNameRegex, name)){
 			throw new illegalNameException("Bad name " + name);
 		}
@@ -98,7 +98,7 @@ public class Variable {
 	 * @throws illegalValueException 
 	 * @throws illegalAssignmentException 
 	 */
-	public void setValue(String value) throws badFileFormatException {
+	public void setValue(String value) throws InValidCodeException {
 		if (!finalFlag) {
 			if (var.getMatcher(value).matches() || value == Variable.isParameter) {
 				this.value = value;

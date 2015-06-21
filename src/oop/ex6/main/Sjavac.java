@@ -6,6 +6,15 @@ import oop.ex6.scopes.Scope;
 
 public class Sjavac {
 	
+	/**
+	 * checks if a sjava file is valid.
+	 * returns 0 if file is valid,
+	 * 1 if file is invalid,
+	 * 2 if there was a problem with file reading.
+	 * calls Parser object for prsing and validating syntax.
+	 * calls Validator object for validating legal code.
+	 * @param args - path of file to validate.
+	 */
 	public static void main(String[] args) {
 		File sjavac = new File(args[0]);
 		try {
@@ -13,14 +22,12 @@ public class Sjavac {
 			Scope a = parser.parseFile();
 			Validator v = new Validator(a);
 			if(!v.isValid())
-				throw new badFileFormatException("");
+				throw new illegalCodeFormatException("");
 			Scope.resetGlobalVariables();
 			System.out.println("0");
-
-		} catch (badFileFormatException e2){
+		} catch (InValidCodeException e2){
 			Scope.resetGlobalVariables();
 			System.out.println("1");
-			e2.printStackTrace();
 		} catch (IOException e1){
 			Scope.resetGlobalVariables();
 			System.out.println("2");

@@ -163,7 +163,7 @@ public class Scope {
 		throw new noSuchVariable("Unknown variable " + variableName);
 	}
 	
-	public void setVariableValue(String varName, String value) throws badFileFormatException{
+	public void setVariableValue(String varName, String value) throws InValidCodeException{
 		try{
 			for(Variable var:knownVariables){
 				if(var.getName().equals(varName)){

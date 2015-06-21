@@ -58,4 +58,9 @@ Parser uses buffer reader to go over the file line by line.
 Regular expressions are used to check validity of code lines.
 Scopes are generated via ScopeFactory's static factory method.
 Each scope type (loops, methods etc) inherit from a Scope super-class.
+Each scope holds the different variables, mthods-calls, variables assignments, etc.
 Variable objects control variable handling using Enum for Type safety control.
+
+Exceptions that causes the code to be invalid inherit from badFileFormatException.
+Exceptions that causes the code to fail because of illegal code usage inherit from illegalCodeFormatException.
+using except

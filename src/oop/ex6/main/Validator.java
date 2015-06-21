@@ -25,7 +25,7 @@ public class Validator {
 		this.methods = mainScope.getInternalMethods();
 	}
 
-	private boolean ValidateMethodAssignments(Scope method) throws badFileFormatException {
+	private boolean ValidateMethodAssignments(Scope method) throws InValidCodeException {
 		ArrayList<String> changedVariables = method.getChangedVars();
 		MethodScope msc = null;
 		try{
@@ -59,7 +59,7 @@ public class Validator {
 		return true;
 	}
 
-	public boolean isValid() throws badFileFormatException{
+	public boolean isValid() throws InValidCodeException{
 		ArrayList<Variable> originalGlobalVars = new ArrayList<>();
 		for(Variable var:Scope.globalVariables){
 			originalGlobalVars.add(new Variable(var));
@@ -86,7 +86,7 @@ public class Validator {
 		return true;
 	}
 	
-	private boolean runMethod(String parentMethodName, Scope method, int conditionIndex) throws badFileFormatException{
+	private boolean runMethod(String parentMethodName, Scope method, int conditionIndex) throws InValidCodeException{
 		for(String command:method.getChronologyRun()){
 			if(Pattern.matches(callMethod, command)){
 				if(command.substring(0, command.indexOf("(")).trim().equals(parentMethodName.trim()))
@@ -97,7 +97,7 @@ public class Validator {
 			if(Pattern.matches(varChangeRegex, command))
 				if(!validateAssignment(method, command))
 					return false;
-			if(Pattern.matches(Parser.varDeclerationRegex, command)){
+			if(Pattern.matches(Parser.VARIABLE_DECLERATION, command)){
 				validateNewVariable(method, command);
 			}
 			if(Pattern.matches(ConditionalScopeHeader, command)){
@@ -109,7 +109,7 @@ public class Validator {
 		return true;
 	}
 
-	private void validateNewVariable(Scope method, String command) throws badFileFormatException {
+	private void validateNewVariable(Scope method, String command) throws InValidCodeException {
 		Pattern p = Pattern.compile(varDeclerationRegex);
 		Matcher m = p.matcher(command);
 		m.matches();
@@ -139,7 +139,7 @@ public class Validator {
 		}
 	}
 
-	private boolean validateAssignment(Scope method, String var) throws badFileFormatException {
+	private boolean validateAssignment(Scope method, String var) throws InValidCodeException {
 		MethodScope msc = null;
 		try{
 			msc = (MethodScope)method;
@@ -172,7 +172,7 @@ public class Validator {
 		return true;
 	}
 
-	private boolean validateScope(Scope method) throws badFileFormatException {
+	private boolean validateScope(Scope method) throws InValidCodeException {
 		ArrayList<String> changedVariables = method.getChangedVars();
 		ArrayList<ConditionScope> internalConditionScope = method.getInternalConditionScopes();
 		ArrayList<String> calledMethods = method.getCalledMethods();
