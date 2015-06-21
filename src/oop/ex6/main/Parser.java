@@ -12,41 +12,36 @@ import oop.ex6.scopes.*;
 
 public class Parser {
 	static final String END_OF_CODE_LINE = ";";
-	final static String openScopeRegex = "\\s*\\{";
-	final static String endScopeRegex = "\\s*\\}";
+	static final String openScopeRegex = "\\s*\\{";
+	static final String endScopeRegex = "\\s*\\}";
 	static final String COMMENT_PREFIX = "//";
 	static final String EMPTY_LINE = "[\\s]*";
 	public static final String START_OF_FILE = "START";
 	static final String LEGAL_CHARS = "\\!#\\$\\%\\&\\(\\)\\*\\+\\-\\.\\/\\:\\;\\<\\=\\>\\?@\\[\\]\\^\\_\\`{\\|}\\~";
-	final static String varChangeRegex = "(\\w+)\\s*=\\s*\"*\\'*([\\w.*\\-]+)\\'*\"*\\s*;";
-	final static String varValuesRegex = "\\s*(\\w+)\\s*(\\=\\s*([\"\\']*[\\w"+LEGAL_CHARS+"]+[\"\\']*)\\s*)?";
-	final static String varModifierRegex = "\\s*(final)*\\s*";
-	final static String varDeclerationRegex = varModifierRegex + "\\s*([a-zA-Z]+)\\s+(" + varValuesRegex + ",)*(" + varValuesRegex + ")?\\s*";
-	final static String varLineRegex = varDeclerationRegex + END_OF_CODE_LINE;
-	final static String HEADER = "[\\w\\s]+\\([\\w\\s\\,]*\\)\\s*\\{";
-//	final static String methodDecleration = "([\\w]+)\\s*\\(\\s*((([\\w]+)\\s*\\,\\s*)*([\\w]+)?)*\\s*\\)\\s*";
-	final static String methodModifier = "void\\s+";
-	final static String methodName = "([a-zA-Z]\\w*)";
-	final static String methodValuesRegex = "((\\w+)\\s+(\\w+))";
-	final static String methodDecleration = methodName  + "\\s*\\(\\s*("+ methodValuesRegex +"\\s*,\\s*)*\\s*" + methodValuesRegex + "?\\s*\\)\\s*";
-	final static String methodHeader = methodModifier + methodDecleration + openScopeRegex;
-	final static String callMethod = methodName  + "\\s*\\(\\s*(['\"]*\\s*(\\w+\\.*\\w*)\\s*['\"]*\\s*,\\s*)*\\s*['\"]*\\s*(\\w+\\.*\\w*)?\\s*['\"]*\\s*\\)\\s*" + END_OF_CODE_LINE;
-	final static String ConditionalScopeHeader = "(while|if)\\s*\\(\\s*([\\w]+)\\s*((\\|\\||\\&\\&)\\s*([\\w]+)\\s*)*\\s*\\)\\s*\\{";
-	final static String returnStatement = "\\s*(return)\\s*" + END_OF_CODE_LINE;
+	static final String varChangeRegex = "(\\w+)\\s*=\\s*\"*\\'*([\\w.*\\-]+)\\'*\"*\\s*;";
+	static final String varValuesRegex = "\\s*(\\w+)\\s*(\\=\\s*([\"\\']*[\\w"+LEGAL_CHARS+"]+[\"\\']*)\\s*)?";
+	static final String varModifierRegex = "\\s*(final)*\\s*";
+	static final String varDeclerationRegex = varModifierRegex + "\\s*([a-zA-Z]+)\\s+(" + varValuesRegex + ",)*(" + varValuesRegex + ")?\\s*";
+	static final String varLineRegex = varDeclerationRegex + END_OF_CODE_LINE;
+	static final String HEADER = "[\\w\\s]+\\([\\w\\s\\,]*\\)\\s*\\{";
+	static final String methodModifier = "void\\s+";
+	static final String methodName = "([a-zA-Z]\\w*)";
+	static final String methodValuesRegex = "((\\w+)\\s+(\\w+))";
+	static final String methodDecleration = methodName  + "\\s*\\(\\s*("+ methodValuesRegex +"\\s*,\\s*)*\\s*" + methodValuesRegex + "?\\s*\\)\\s*";
+	static final String methodHeader = methodModifier + methodDecleration + openScopeRegex;
+	static final String callMethod = methodName  + "\\s*\\(\\s*(['\"]*\\s*(\\w+\\.*\\w*)\\s*['\"]*\\s*,\\s*)*\\s*['\"]*\\s*(\\w+\\.*\\w*)?\\s*['\"]*\\s*\\)\\s*" + END_OF_CODE_LINE;
+	static final String ConditionalScopeHeader = "(while|if)\\s*\\(\\s*([\\w]+)\\s*((\\|\\||\\&\\&)\\s*([\\w]+)\\s*)*\\s*\\)\\s*\\{";
+	static final String returnStatement = "\\s*(return)\\s*" + END_OF_CODE_LINE;
 
 	BufferedReader buffer;
-	private ArrayList<Variable> globalVariables;
 	private Scope mainScope;
 	
 	public Parser(File path) throws IOException, badFileFormatException {
 		this.buffer =  new BufferedReader(new FileReader(path));
-		this.globalVariables = new ArrayList<>();
 	}
 	
 	public Scope parseFile() throws IOException, badFileFormatException{
 		parseMain();
-		//setMethods();
-		//initializeVars(this.methods);
 		return this.mainScope;
 	}
 	
@@ -54,13 +49,7 @@ public class Parser {
 		mainScope = parseScope(START_OF_FILE);
 		
 	}
-	
-//	private void initializeVars(ArrayList<Scope> methods){
-//		for (Scope method: methods) {
-//			method.addAllVars(globalVars);
-//		}
-//	}
-	
+
 	public Scope parseScope(String header) throws IOException, badFileFormatException {
 		Scope sc = ScopeFactory.getScope(header);
 		String currentLine = buffer.readLine();
@@ -88,7 +77,8 @@ public class Parser {
 				ArrayList<Variable> varsToAdd;
 				if(sc.getName().equals(START_OF_FILE)){ //add as globals
 					varsToAdd = handleVar(currentLine.substring(0, currentLine.lastIndexOf(END_OF_CODE_LINE)), true, sc);
-				} else {//don't add as globals
+				//don't add as globals
+				} else {
 					varsToAdd = handleVar(currentLine.substring(0, currentLine.lastIndexOf(END_OF_CODE_LINE)), false, sc);
 				}
 				sc.addAllVars(varsToAdd);
@@ -143,10 +133,8 @@ public class Parser {
 				}
 			}
 			throw new illegalLineException("Line does not match format");
-		}//while
+		}
 		if (sc.getName() == START_OF_FILE) {
-//			currentLine = buffer.readLine();
-//			if (checkToIgnore(currentLine)) {
 			return sc;
 		} else {
 			throw new illegalLineException("unexpected EOF");
@@ -154,12 +142,6 @@ public class Parser {
 	}
 	
 	private String handleAssignmentVar(String currentLine) {
-//		Pattern p = Pattern.compile(varChangeRegex);
-//		Matcher m = p.matcher(currentLine);
-//		m.matches();
-//		String varName = m.group(1).trim();
-//		String varNewValue = m.group(2).trim();
-//		return varName + ", " + varNewValue;
 		String[] lineSplit = currentLine.split("\\s*\\=\\s*");
 		return lineSplit[0] + ", " + lineSplit[1];
 	}
@@ -189,11 +171,11 @@ public class Parser {
 			}
 			if (varValue != null) {
 				try{
-					vars.add(new Variable(var, m.group(1) , m.group(3), varModifier, globalFlag));
+					vars.add(new Variable(var, varName , varValue, varModifier, globalFlag));
 				}
 				catch(illegalValueException e){
-					vars.add(new Variable(var, m.group(1), varModifier, globalFlag));
-					sc.addAssignmentVar(m.group(1) + ", " + m.group(3));
+					vars.add(new Variable(var, varName, varModifier, globalFlag));
+					sc.addAssignmentVar(varName + ", " + varValue);
 				}
 			} else {
 				if(varModifier != null){
