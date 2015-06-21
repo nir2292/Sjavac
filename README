@@ -58,9 +58,38 @@ Parser uses buffer reader to go over the file line by line.
 Regular expressions are used to check validity of code lines.
 Scopes are generated via ScopeFactory's static factory method.
 Each scope type (loops, methods etc) inherit from a Scope super-class.
-Each scope holds the different variables, mthods-calls, variables assignments, etc.
+Each scope holds the different variables, methods-calls, variables assignments, etc.
 Variable objects control variable handling using Enum for Type safety control.
 
+After parsing - Validator goes over all objects and checks code validity.
+
+QUESTION 6.1
 Exceptions that causes the code to be invalid inherit from badFileFormatException.
 Exceptions that causes the code to fail because of illegal code usage inherit from illegalCodeFormatException.
 Both super-class Exception types inherit from InValidCodeException.
+All errors that cause a InValidCodeException to be thrown cause the program to print out "1".
+All file errors that cause a IOException to be thrown causes the program to print out "2".
+
+seeing that we only use "primitive" types, using enums was sufficient.
+having been requested to support more complicated object types we would have used a factory.
+
+QUESTION 6.2
+
+* new types such as float are easy to add by adding the corresponding field to enum Type.
+Regex for variable declaration is general enough to filter all kinds of values.
+Each Type supply its own regex for filtering the right value for its variable.  
+
+* Adding arrays to the program can be done by creating an Array class that holds Type objects.
+Regular expression is sufficient in order to catch different types such as Array[?],
+but a factory would have had to be created in order to manage object creation.
+
+* Unary and binary operators can be created using enums much like in Tirgul12.
+Validator class would have had to be updated in order to check legal use of operators.
+Parser would also have had to be updated with operators supporting regular expressions.
+
+QUESTION 6.3
+
+Our main use of regular expression was in variable declaration lines and method header.
+We broke down the general regex into smaller ones so we could reuse them as different types of code lines.
+We used an online regex tester in the process of writing the different regular expression.
+Also an elaborate use of trim() method in code parsing helped simplifying regex. 
