@@ -71,9 +71,11 @@ public class Validator {
 		}
 		Scope.setGlobalVariables(originalGlobalVars);
 		mainScope.setKnownVariables(originalMainScopeVars);
-		for(Scope method:methods){
+		for(MethodScope method:methods){
 			ArrayList<Variable> originalMethodVars = method.getKnownVariables();
 			if(!(validateScope(method) && runMethod(method.getName(), method, 0))){
+				if(!method.isReturned())
+					throw new badFileFormatException("No return statement at the end of method " + method.getName());
 				Scope.resetGlobalVariables();
 				return false;
 			}

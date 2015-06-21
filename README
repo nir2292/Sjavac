@@ -7,55 +7,65 @@ Nir Erez
 README
 QUESTIONS
 
--- oop.ex6.main --
-Parser.java
-Sjavac.java
-Type.java
-Validator.java
-Variable.java
-VariableFactory.java
-badFileFormatException.java
-badMethodCallException.java
-endOfFileException.java
-illegalAssignmentException.java
-illegalLineException.java
-illegalNameException.java
-illegalValueException.java
-noSuchMethodException.java
-noSuchTypeException.java
-noSuchVariable.java
+-- oop.ex5.filescript --
+IllegalCommandException.java - class representing illegal FILTER\ORDER command.
+MyFileScript.java
+Parser.java - class for processing command files.
+Section.java - class for compartmenting sections of command files represented by filters and orders.
+TypeOneException.java - superclass for all type1 exceptions.
+TypeTwoException.java - superclass for all type2 exceptions.
 
+-- oop.ex5.filters --
+Filter.java - Filter interface which all filters implements.
+FilterFactory.java - factory for instantiating filters.
+AllFilter.java
+NegatedFilter.java - decorator for negating filters.
+SizeFilter.java - superclass for size based filter.
+GreaterThanFilter.java
+SmallerThanFilter.java
+BetweenFilter.java
+StringFilter.java - superclass for String based filter.
+ContainsFilter.java
+FileFilter.java
+PrefixFilter.java
+SuffixFilter.java
+YesNoFilter.java - superclass for Yes\No based filter.
+ExecutableFilter.java
+HiddenFilter.java
+WritableFilter.java
+illegalFilterException.java - class representing illegal filter.
+illegalValueException.java - class representing illegal values for filters.
 
--- oop.ex6.scopes --
-ConditionScope.java
-MethodScope.java
-Scope.java
-ScopeFactory.java
-badConditionFormat.java
-illegalVariableDeclerationException.java
+-- oop.ex5.orders --
+Order.java - Order interface which all orders implement.
+OrderFactory.java - factory for instantiating orders.
+ReverseOrder.java - decorator class for reversing orders.
+AbsOrder.java
+SizeOrder.java
+TypeOrder.java
+illegalOrderNameException.java - class representing illegal names for orders.
 
 
 =============================
 =          Design           =
 =============================
-Our design is as follows:
-Sjavac class is the manager of the program - handle files i\o and outputs for the user.
-Calls Parser class for processing of file.
-
-Parser class - reads the file line by line and constructs Scope objects for each scope in the code with the ScopeFactory.
-
-ScopeFactory - receives a header for a scope and generates scopes accordingly.
-Each Scope consists of Variables-objects and that represent the different variables.
-Variables types are represented as Type Enum - with which we created a "pool" for supported variables types.
-Expanding supported variables types is encapsulated only for Type Enum.
-
-when parsing process is completed we use Validator to handle Variable assignment and method calls.
+I used the design suggested in tirgul5, as followed:
+Manager - MyFileScript - receives file related parameters, calls parser for processing,
+receives sections and calls each section for printing.
+Parser - Parser - goes over the command file, creates filter\order object and batches them in sections.
+handles exceptions for determining filters\orders.
+Section - Section - modulates all printing capabilities using filters and orders.
+Filter\Order factory - generates diferent filters.
+Filters\Orders - the different filter\orders types.
 
 =============================
 =  Implementation details   =
 =============================
-Parser uses buffer reader to go over the file line by line.
-Regular expressions are used to check validity of code lines.
-Scopes are generated via ScopeFactory's static factory method.
-Each scope type (loops, methods etc) inherit from a Scope super-class.
-Variable objects control variable handling using Enum for Type safety control.
+I used regular expressions to determine the validity of filters, implemented in FilterFactory.
+Itereting over the different lines in the command files is implemented by a flag and modulu-comparisons.
+Exceptions are divided into 2 main superclasses:
+type 1 exceptions - exceptions that cause a warning to be printed and default values to be used.
+type1 exceptions stores as a data-member the row in which the error occurred.
+type 2 exceptions - exceptions that causes the program to stop.
+as mentioned above, values\order\filter related exceptions inherit from type
+bad command related exceptions inherit from type 2 superclass.
