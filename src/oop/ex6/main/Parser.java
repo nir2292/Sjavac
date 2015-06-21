@@ -107,7 +107,7 @@ public class Parser {
 					continue;
 				}
 				if(Pattern.matches(returnStatement, currentLine)){
-					currentLine = buffer.readLine();
+					currentLine = buffer.readLine().trim();
 					try {
 						MethodScope scs = (MethodScope)sc;
 						scs.markReturned();

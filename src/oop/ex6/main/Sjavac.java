@@ -16,9 +16,11 @@ public class Sjavac {
 				throw new badFileFormatException("");
 			Scope.resetGlobalVariables();
 			System.out.println("0");
+
 		} catch (badFileFormatException e2){
 			Scope.resetGlobalVariables();
 			System.out.println("1");
+			e2.printStackTrace();
 		} catch (IOException e1){
 			Scope.resetGlobalVariables();
 			System.out.println("2");
