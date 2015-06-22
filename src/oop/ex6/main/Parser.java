@@ -21,10 +21,7 @@ public class Parser {
 	static final String VARIABLE_CHANGE_REGEX = "(\\w+)\\s*=\\s*\"*\\'*([\\w.*\\-]+)\\'*\"*\\s*;";
 	static final String VARIABLE_VALUE_REGEX = "\\s*(\\w+)\\s*(\\=\\s*([\"\\']*[\\w"+LEGAL_CHARS+"]+[\"\\']*)\\s*)?";
 	static final String VARIABLE_MODIFIER = "\\s*(final)*\\s*";
-	/**
-	 * global flag for variable deceleration line.
-	 */
-	public static final String VARIABLE_DECLERATION = VARIABLE_MODIFIER + "\\s*([a-zA-Z]+)\\s+(" + VARIABLE_VALUE_REGEX + ",)*(" + VARIABLE_VALUE_REGEX + ")?\\s*";
+	static final String VARIABLE_DECLERATION = VARIABLE_MODIFIER + "\\s*([a-zA-Z]+)\\s+(" + VARIABLE_VALUE_REGEX + ",)*(" + VARIABLE_VALUE_REGEX + ")?\\s*";
 	static final String VARIABLE_LINE_REGEX = VARIABLE_DECLERATION + END_OF_CODE_LINE;
 	static final String HEADER = "[\\w\\s]+\\([\\w\\s\\,]*\\)\\s*\\{";
 	static final String METHOD_MODIFIER_REGEX = "void\\s+";

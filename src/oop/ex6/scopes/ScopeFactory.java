@@ -9,6 +9,9 @@ import oop.ex6.main.Parser;
 import oop.ex6.main.Variable;
 import oop.ex6.main.badFileFormatException;
 
+/**
+ * Factory class for Scope objects.
+ */
 public class ScopeFactory {
 	
 	final static String METHOD_VALUE_REGEX = "([a-zA-Z]+)\\s+([\\p{Punct}\\w]+)";
