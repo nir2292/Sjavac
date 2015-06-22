@@ -8,6 +8,9 @@ import oop.ex6.main.Type;
 import oop.ex6.main.Variable;
 import oop.ex6.main.noSuchVariableException;
 
+/**
+ * Represents an if/while scope in the code.
+ */
 public class ConditionScope extends Scope {
 	private static final String ACCEPTED_TYPES = "int|boolean|double";
 	private Matcher conditionBooleanMatcher;
@@ -39,6 +42,11 @@ public class ConditionScope extends Scope {
 		}
 		return representation;
 	}
+	
+	/**
+	 *  Adds the given conditions to the current conditions.
+	 * @param conditions the conditions to add.
+	 */
 	public void addContitions(String[] conditions) {
 		if (conditions != null) {
 			for (String condition : conditions){
@@ -47,11 +55,22 @@ public class ConditionScope extends Scope {
 		}
 	}
 	
+	/**
+	 * Validates the conditions are legal.
+	 * @return true iff the conditions are legal.
+	 * @throws badConditionFormat
+	 * @throws noSuchVariableException
+	 */
 	public boolean validateConditions() throws badConditionFormat, noSuchVariableException{
 		checkConditions();
 		return true;
 	}
-
+	
+	/**
+	 * Checks whether each of the conitions is legal.
+	 * @throws badConditionFormat
+	 * @throws noSuchVariableException
+	 */
 	private void checkConditions() throws badConditionFormat, noSuchVariableException {
 		for(String condition:conditions){
 			conditionBooleanMatcher = Type.BOOLEAN.getMatcher(condition);

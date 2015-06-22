@@ -2,6 +2,9 @@ package oop.ex6.main;
 
 import java.util.regex.Pattern;
 
+/*
+ * Represents a variable in the code.
+ */
 public class Variable {
 	
 	final static String FINAL = "final";
@@ -54,6 +57,9 @@ public class Variable {
 		}
 	}
 	
+	/*
+	 * A copy constructor.
+	 */
 	public Variable(Variable var) {
 		this.finalFlag = var.finalFlag;
 		this.globaFlag = var.isGlobal();
