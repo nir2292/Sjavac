@@ -3,6 +3,10 @@ import java.util.ArrayList;
 
 import oop.ex6.main.*;
 
+/**
+ * Represents a scope in the code.
+ *
+ */
 public class Scope {
 	static public ArrayList<Variable> globalVariables = new ArrayList<>();
 	ArrayList<Variable> knownVariables;
@@ -64,6 +68,10 @@ public class Scope {
 		return this.calledMethods;
 	}
 	
+	/**
+	 * Adds a call to a method.
+	 * @param callingLine the call to add.
+	 */
 	public void addCalledMethod(String callingLine){
 		// Checking if contains because we don't need to check twice for the same call.
 		if(!calledMethods.contains(callingLine))
@@ -74,6 +82,11 @@ public class Scope {
 		return this.name;
 	}
 	
+	/**
+	 * Adds a variable to the scope's known variables.
+	 * @param var the variable to add.
+	 * @throws illegalVariableDeclerationException
+	 */
 	public void addVar(Variable var) throws illegalVariableDeclerationException{
 		if(var.isGlobal()){
 			if(!containGlobalVar(var))
@@ -95,7 +108,12 @@ public class Scope {
 				}
 			}
 	}
-
+	
+	/**
+	 * Checks whether the given variable is in the global variables.
+	 * @param var the variable to check.
+	 * @return true iff the given var is global.
+	 */
 	private boolean containGlobalVar(Variable var) {
 		for(Variable globalVar:globalVariables)
 			if(globalVar.getName().equals(var.getName()))
@@ -108,10 +126,13 @@ public class Scope {
 			addVar(var);
 	}
 	
+	/**
+	 * Adds a variable assignment wanted to be performed.
+	 * @param var the variable and it's new value to assign.
+	 */
 	public void addAssignmentVar(String var){
 		this.changedVars.add(var);
 	}
-	
 	
 	public ArrayList<Variable> getKnownVariables() {
 		return knownVariables;
@@ -120,7 +141,10 @@ public class Scope {
 	public ArrayList<String> getChangedVars() {
 		return changedVars;
 	}
-	
+	/**
+	 * Sets the global variables list to the given list.
+	 * @param globalVars the vars to set.
+	 */
 	public static void setGlobalVariables(ArrayList<Variable> globalVars) {
 		Scope.resetGlobalVariables();
 		for(Variable var:globalVars)
@@ -163,6 +187,12 @@ public class Scope {
 		throw new noSuchVariableException("Unknown variable " + variableName);
 	}
 	
+	/**
+	 * Sets the given value to the given variable.
+	 * @param varName the variable to change's name
+	 * @param value the value to change to
+	 * @throws InValidCodeException
+	 */
 	public void setVariableValue(String varName, String value) throws InValidCodeException{
 		try{
 			for(Variable var:knownVariables){

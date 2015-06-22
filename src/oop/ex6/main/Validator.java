@@ -5,9 +5,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import oop.ex6.scopes.*;
-
+/**
+ * Validates the code is legit.
+ *
+ */
 public class Validator {
-	private final String valueAssignmentRegex = "\\w+\\=\\w+\\;";
 	private final String varRegex = "\\s*(['\"]*\\s*\\w+\\.*\\w*\\s*['\"]*)\\s*";
 	private final String methodDeclerationRegex = "([\\w]+)\\s*\\(\\s*(['\"]*\\s*(\\w+\\.*\\w*)\\s*['\"]*\\s*,\\s*)*\\s*['\"]*\\s*(\\w+\\.*\\w*)?\\s*['\"]*\\s*\\)\\s*";
 	final static String varValuesRegex = "\\s*(\\w+)\\s*(\\=\\s*([\"\\']*[\\w"+Parser.LEGAL_CHARS+"]+[\"\\']*)\\s*)?";
@@ -25,47 +27,18 @@ public class Validator {
 		this.methods = mainScope.getInternalMethods();
 	}
 
-	private boolean ValidateMethodAssignments(Scope method) throws InValidCodeException {
-		ArrayList<String> changedVariables = method.getChangedVars();
-		MethodScope msc = null;
-		try{
-			msc = (MethodScope)method;
-		}
-		catch(java.lang.ClassCastException e){
-		}
-		for(String var:changedVariables){
-			String varInfo[] = var.split("\\, ");
-			String varName = varInfo[0];
-			String varNewValue = varInfo[1];
-			Variable varToChange = method.getVariableByName(varName);
-			Variable varOfValue = method.getVariableByName(varNewValue);
-			if(varOfValue != null){
-				if(varOfValue.getValue() == null){
-					if(msc != null){
-						Variable methodParam = msc.getParameterByName(varOfValue.getName());
-						if(methodParam == null)
-							throw new illegalAssignmentException("can't assign null to value of " + varName);
-						else
-							continue;
-					}
-					else
-						throw new illegalAssignmentException("can't assign null to value of " + varName);
-				}
-				else method.setVariableValue(varName, varOfValue.getValue());
-			}
-			else
-				method.setVariableValue(varName, varNewValue);
-		}
-		return true;
-	}
-
+	/**
+	 * Runs the tests on each of the code's scopes.
+	 * @return true iff the code is valid.
+	 * @throws InValidCodeException
+	 */
 	public boolean isValid() throws InValidCodeException{
 		ArrayList<Variable> originalGlobalVars = new ArrayList<>();
 		for(Variable var:Scope.globalVariables){
 			originalGlobalVars.add(new Variable(var));
 		}
 		ArrayList<Variable> originalMainScopeVars = mainScope.getKnownVariables();
-		if(!(validateScope(mainScope) && runMethod(mainScope.getName(), mainScope, 0))){
+		if(!(validateMethodCalls(mainScope) && runMethod(mainScope.getName(), mainScope, 0))){
 			Scope.resetGlobalVariables();
 			return false;
 		}
@@ -75,7 +48,7 @@ public class Validator {
 			ArrayList<Variable> originalMethodVars = method.getKnownVariables();
 			if(!method.isReturned())
 				throw new badFileFormatException("No return statement at the end of method " + method.getName());
-			if(!(validateScope(method) && runMethod(method.getName(), method, 0))){
+			if(!(validateMethodCalls(method) && runMethod(method.getName(), method, 0))){
 				Scope.resetGlobalVariables();
 				return false;
 			}
@@ -86,6 +59,15 @@ public class Validator {
 		return true;
 	}
 	
+	/**
+	 * "Running" the method and checking for illegal operations.
+	 * @param parentMethodName the current checked method's name.
+	 * @param method the method/scope currenlt checked.
+	 * @param conditionIndex the index of the conditional scope we have to check next, 
+	 * 		if exists in the method.
+	 * @return true iff the method is valid.
+	 * @throws InValidCodeException
+	 */
 	private boolean runMethod(String parentMethodName, Scope method, int conditionIndex) throws InValidCodeException{
 		for(String command:method.getChronologyRun()){
 			if(Pattern.matches(callMethod, command)){
@@ -108,7 +90,10 @@ public class Validator {
 		}
 		return true;
 	}
-
+	
+	/*
+	 * Validates the assignment of a new variable is legal.
+	 */
 	private void validateNewVariable(Scope method, String command) throws InValidCodeException {
 		Pattern p = Pattern.compile(varDeclerationRegex);
 		Matcher m = p.matcher(command);
@@ -138,7 +123,10 @@ public class Validator {
 				throw new illegalAssignmentException("illegal assignment for var " + varName);
 		}
 	}
-
+	
+	/*
+	 * Validates the assignment of an existing variable is legal.
+	 */
 	private boolean validateAssignment(Scope method, String var) throws InValidCodeException {
 		MethodScope msc = null;
 		try{
@@ -171,9 +159,11 @@ public class Validator {
 			method.setVariableValue(varName, varNewValue);
 		return true;
 	}
-
-	private boolean validateScope(Scope method) throws InValidCodeException {
-		ArrayList<String> changedVariables = method.getChangedVars();
+	
+	/*
+	 * Validates the method calls in each of the scopes.
+	 */
+	private boolean validateMethodCalls(Scope method) throws InValidCodeException {
 		ArrayList<ConditionScope> internalConditionScope = method.getInternalConditionScopes();
 		ArrayList<String> calledMethods = method.getCalledMethods();
 		for(String mthd:calledMethods){
@@ -214,7 +204,7 @@ public class Validator {
 			cScope.validateConditions();
 		}
 		for(ConditionScope scope:internalConditionScope)
-			return validateScope(scope);
+			return validateMethodCalls(scope);
 		return true;
 	}
 }

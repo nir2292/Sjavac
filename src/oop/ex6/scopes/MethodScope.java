@@ -6,6 +6,10 @@ import oop.ex6.main.InValidCodeException;
 import oop.ex6.main.Variable;
 import oop.ex6.main.badMethodCallException;
 
+/**
+ * Represents a method scope in the code.
+ *
+ */
 public class MethodScope extends Scope {
 	private ArrayList<Variable> parameters;
 	private boolean returned;
@@ -37,15 +41,24 @@ public class MethodScope extends Scope {
 		this.parameters = parameters;
 	}
 	
+	/**
+	 * 
+	 * @param index
+	 * @return
+	 * @throws badMethodCallException
+	 */
 	public Variable getParameter(int index) throws badMethodCallException{
-		try{
+		if(index < parameters.size())
 			return parameters.get(index);
-		}
-		catch (NullPointerException e){
+		else
 			throw new badMethodCallException("Bad method call");
-		}
 	}
-
+	
+	/**
+	 * Adds parameters to the method's parameters.
+	 * @param params the parameters to add.
+	 * @throws InValidCodeException
+	 */
 	public void addToParameters(ArrayList<Variable> params) throws InValidCodeException {
 		for(Variable var:params){
 			var.setValue(Variable.isParameter);
@@ -56,10 +69,15 @@ public class MethodScope extends Scope {
 	public ArrayList<Variable> getParamers() {
 		return this.parameters;
 	}
-
-	public boolean containsParameter(Variable varOfValue) {
+	
+	/**
+	 * Checks whether the given variable is a paramater of the method.
+	 * @param varOfValue the variable to check.
+	 * @return
+	 */
+	public boolean containsParameter(Variable varToCheck) {
 		for(Variable var:parameters)
-			if(var.getName().equals(varOfValue) && var.getType().equals(varOfValue))
+			if(var.getName().equals(varToCheck) && var.getType().equals(varToCheck))
 				return true;
 		return false;
 	}
@@ -67,6 +85,7 @@ public class MethodScope extends Scope {
 	public void markReturned(){
 		this.returned = true;
 	}
+	
 	public boolean isReturned(){
 		return this.returned;
 	}
