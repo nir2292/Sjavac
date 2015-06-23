@@ -28,9 +28,11 @@ public class Sjavac {
 		} catch (InValidCodeException e2){
 			Scope.resetGlobalVariables();
 			System.out.println("1");
+			System.out.println(e2.getMessage());
 		} catch (IOException e1){
 			Scope.resetGlobalVariables();
 			System.out.println("2");
+			System.out.println(e1.getMessage());
 		}
 	}
 }

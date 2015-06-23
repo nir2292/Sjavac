@@ -18,6 +18,10 @@ public enum Type {
 		p = Pattern.compile(format);
 	}
 	
+	/**
+	 * @param values - optional value for variable.
+	 * @return - matcher for values pattern.
+	 */
 	public Matcher getMatcher(String values) {
 		return p.matcher(values); 
 	}

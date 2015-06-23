@@ -21,6 +21,10 @@ public class MethodScope extends Scope {
 		this.returned = false;
 	}
 	
+	/**
+	 * @param varName - name of parameter
+	 * @return - Variable object representing parameter of scope.
+	 */
 	public Variable getParameterByName(String varName) {
 		for(Variable var:parameters){
 			if(var.getName().equals(varName)){
@@ -30,21 +34,35 @@ public class MethodScope extends Scope {
 		return null;
 	}
 	
+	/**
+	 * @param name of scope.
+	 * @param parameters - list of parameters for scope.
+	 */
 	public MethodScope(String name, ArrayList<Variable> parameters) {
 		super(name);
 		this.parameters = parameters;
 	}
 	
-
+	/**
+	 * @param name of scope
+	 * @param parameters - list of parameters for scope.
+	 * @param vars - known variables.
+	 * @throws illegalVariableDeclerationException
+	 */
 	public MethodScope(String name, ArrayList<Variable> parameters, ArrayList<Variable> vars) throws illegalVariableDeclerationException {
 		super(name, vars);
 		this.parameters = parameters;
 	}
 	
 	/**
+<<<<<<< HEAD
 	 * 
 	 * @param index
 	 * @return
+=======
+	 * @param index of parameter to return.
+	 * @return parameter of index.
+>>>>>>> branch 'master' of https://github.com/nir2292/Sjavac.git
 	 * @throws badMethodCallException
 	 */
 	public Variable getParameter(int index) throws badMethodCallException{
@@ -65,7 +83,10 @@ public class MethodScope extends Scope {
 			this.parameters.add(var);
 		}
 	}
-
+	
+	/**
+	 * @return list of parameters for scope.
+	 */
 	public ArrayList<Variable> getParamers() {
 		return this.parameters;
 	}
@@ -82,10 +103,17 @@ public class MethodScope extends Scope {
 		return false;
 	}
 	
+	/**
+	 * marks scope as returned - has return declaration.
+	 */
 	public void markReturned(){
 		this.returned = true;
 	}
 	
+
+	/**
+	 * @return true if scope has a return declaration.
+	 */
 	public boolean isReturned(){
 		return this.returned;
 	}

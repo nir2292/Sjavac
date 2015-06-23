@@ -7,6 +7,10 @@ public class noSuchMethodException extends badFileFormatException {
 
 	private static final long serialVersionUID = 1L;
 
+	/**
+	 * constructor.
+	 * @param message
+	 */
 	public noSuchMethodException(String message) {
 		super(message);
 	}

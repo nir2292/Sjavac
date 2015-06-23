@@ -5,7 +5,10 @@ import oop.ex6.main.*;
 
 /**
  * Represents a scope in the code.
+<<<<<<< HEAD
  *
+=======
+>>>>>>> branch 'master' of https://github.com/nir2292/Sjavac.git
  */
 public class Scope {
 	static public ArrayList<Variable> globalVariables = new ArrayList<>();
@@ -17,6 +20,10 @@ public class Scope {
 	private ArrayList<ConditionScope> internalConditionScopes;
 	private String name;
 	
+	/**
+	 * constructor for Scope class.
+	 * @param name of scope
+	 */
 	public Scope(String name){
 		this.knownVariables = new ArrayList<>();
 		this.changedVars = new ArrayList<>();
@@ -27,6 +34,12 @@ public class Scope {
 		this.name = name;
 	}
 	
+	/**
+	 * constructor for Scope class.
+	 * @param name of scope.
+	 * @param vars to initiate.
+	 * @throws illegalVariableDeclerationException
+	 */
 	public Scope(String name, ArrayList<Variable> vars) throws illegalVariableDeclerationException{
 		this.knownVariables = new ArrayList<>();
 		this.changedVars = new ArrayList<>();
@@ -38,10 +51,17 @@ public class Scope {
 		addAllVars(vars);
 	}
 	
+	/**
+	 * @return chronological order of scopes.
+	 */
 	public ArrayList<String> getChronologyRun() {
 		return chronologyRun;
 	}
-
+	
+	/**
+	 * adds methods for chronological run list.
+	 * @param chronologyRun
+	 */
 	public void addChronologyRun(String chronologyRun) {
 		this.chronologyRun.add(chronologyRun);
 	}
@@ -64,6 +84,9 @@ public class Scope {
 		return representation + " " + this.getClass();
 	}
 	
+	/**
+	 * @return list of calls to methods.
+	 */
 	public ArrayList<String> getCalledMethods(){
 		return this.calledMethods;
 	}
@@ -78,6 +101,9 @@ public class Scope {
 			calledMethods.add(callingLine);
 	}
 	
+	/**
+	 * @return name of scope.
+	 */
 	public String getName() {
 		return this.name;
 	}
@@ -120,7 +146,12 @@ public class Scope {
 				return true;
 		return false;
 	}
-
+	
+	/**
+	 * adds all variables to scope.
+	 * @param vars to add
+	 * @throws illegalVariableDeclerationException
+	 */
 	public void addAllVars(ArrayList<Variable> vars) throws illegalVariableDeclerationException{
 		for(Variable var:vars)
 			addVar(var);
@@ -134,10 +165,17 @@ public class Scope {
 		this.changedVars.add(var);
 	}
 	
+	
+	/**
+	 * @return known variables to scope.
+	 */
 	public ArrayList<Variable> getKnownVariables() {
 		return knownVariables;
 	}
-
+	
+	/**
+	 * @return list of changed variables.
+	 */
 	public ArrayList<String> getChangedVars() {
 		return changedVars;
 	}
@@ -150,19 +188,32 @@ public class Scope {
 		for(Variable var:globalVars)
 			Scope.globalVariables.add(new Variable(var));
 	}
-
+	
+	/**
+	 * sets all known variables.
+	 * @param knownVariables
+	 */
 	public void setKnownVariables(ArrayList<Variable> knownVariables) {
 		this.knownVariables = knownVariables;
 	}
-
+	
+	/**
+	 * @return list of internal method scopes.
+	 */
 	public ArrayList<MethodScope> getInternalMethods(){
 		return this.internalMethods;
 	}
 	
+	/**
+	 * @return list of internal condition scopes.
+	 */
 	public ArrayList<ConditionScope> getInternalConditionScopes(){
 		return this.internalConditionScopes;
 	}
 	
+	/**
+	 * resets global variables.
+	 */
 	static public void resetGlobalVariables(){
 		Scope.globalVariables = new ArrayList<>();
 	}
@@ -211,10 +262,18 @@ public class Scope {
 		}
 	}
 	
+	/**
+	 * adds internal method scope.
+	 * @param scope
+	 */
 	public void addMethodScope(MethodScope scope) {
 		internalMethods.add(scope);
 	}
 	
+	/**
+	 * adds internal condition scope.
+	 * @param scope
+	 */
 	public void addConditionScope(ConditionScope scope){
 		internalConditionScopes.add(scope);
 	}
